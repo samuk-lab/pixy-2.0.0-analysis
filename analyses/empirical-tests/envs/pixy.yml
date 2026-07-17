@@ -8,7 +8,7 @@ channels:
 channel_priority: strict
 dependencies:
   - python=3.11
-  - pixy>=2.0.0
+  - pixy=2.2.2
   - bcftools=1.23.1
   - htslib=1.23.1
   - tabix
