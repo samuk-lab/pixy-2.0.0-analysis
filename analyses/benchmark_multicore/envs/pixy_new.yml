@@ -1,0 +1,19 @@
+name: new_pixy
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # pixy 2.1.2: streaming FST + faster tabix contig-end check (reduces peak RSS).
+  # Install conda pixy=2.0.0 first to pull in all runtime deps, then pip-replace
+  # with tag 2.1.2 from GitHub (bioconda may not yet have 2.1.2).
+  # CLI flags (--n_cores, --chunk_size, --output_folder, --output_prefix) unchanged.
+  - python>=3.10
+  - pixy=2.0.0
+  - htslib    # provides tabix, required for pixy 2.x VCF random access
+  - samtools
+  - bcftools
+  - pip
+  - pip:
+    - --no-deps
+    - git+https://github.com/ksamuk/pixy.git@2.1.2

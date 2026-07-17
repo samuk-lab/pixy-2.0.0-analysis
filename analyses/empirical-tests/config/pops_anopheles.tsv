@@ -1,0 +1,22 @@
+# 8 BFS + 8 KES — first 8 by sample_id lex sort from each population
+# in pops_anopheles.full.tsv. Deterministic, matches the natural cohort
+# granularity of the arenosa arm (n_per_pop = 8) so per-window denominators
+# are directly comparable between arms.
+# Source column is ENA:<ERS accession>; resolved to BAM URL at fetch time.
+sample_id	population	source_bam
+AB0085-Cx	BFS	ENA:ERS223996
+AB0086-Cx	BFS	ENA:ERS223972
+AB0096-C	BFS	ENA:ERS223998
+AB0103-C	BFS	ENA:ERS223970
+AB0104-Cx	BFS	ENA:ERS223976
+AB0116-C	BFS	ENA:ERS224024
+AB0117-C	BFS	ENA:ERS224010
+AB0118-C	BFS	ENA:ERS224059
+AK0041-C	KES	ENA:ERS224232
+AK0042-C	KES	ENA:ERS224301
+AK0043-C	KES	ENA:ERS224229
+AK0044-C	KES	ENA:ERS224197
+AK0045-Cx	KES	ENA:ERS224225
+AK0046-C	KES	ENA:ERS224122
+AK0047-C	KES	ENA:ERS224158
+AK0049-C	KES	ENA:ERS224116

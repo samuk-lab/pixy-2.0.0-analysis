@@ -1,0 +1,3 @@
+arm_id	species	ploidy	reference_name	reference_url	chrom	chrom_size	pop_a	pop_b	pops_file	n_per_pop	window_size	rng_seed
+anopheles	anopheles_gambiae	2	AgamP4	https://vectorbase.org/common/downloads/Current_Release/AgambiaePEST/fasta/data/VectorBase-68_AgambiaePEST_Genome.fasta	3R	53200684	BFS	KES	config/pops_anopheles.tsv	8	10000	1000
+arenosa	arabidopsis_arenosa	4	AARE701a	https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/216/605/GCA_905216605.1_AARE701a/GCA_905216605.1_AARE701a_genomic.fna.gz	LR999451.1	25224288	SPI	TRE	config/pops_arenosa.tsv	8	10000	1000

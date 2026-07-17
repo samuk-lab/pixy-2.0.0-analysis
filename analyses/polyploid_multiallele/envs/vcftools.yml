@@ -1,0 +1,9 @@
+name: vcftools
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - bioconda::vcftools
+  - bioconda::htslib
+  - bioconda::bcftools

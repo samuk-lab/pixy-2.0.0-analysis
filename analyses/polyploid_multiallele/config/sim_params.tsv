@@ -1,0 +1,89 @@
+arm	stats	n_populations	sample_size	sample_split	ploidy_chr1	ploidy_chr2	sequence_length	Ne	mu	percent_missing_sites	percent_missing_genotypes	n_replicates	seed_start	split_time	fst_type	comparators	notes	recombination_rate
+pi_dip_1pop	pi,thetaw,tajimaD	1	10	NA	2	NA	100000	1720600	5.49e-9	0	0	10000	1	NA	NA	vcftools,old_pixy	baseline (r=mu rerun)	5.49e-9
+pi_tet_1pop	pi,thetaw,tajimaD	1	10	NA	4	NA	100000	1720600	5.49e-9	0	0	10000	1	NA	NA	NA	baseline (r=mu rerun)	5.49e-9
+dxy_dip_2pop	dxy,fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	0	0	10000	1	1000000	wc,hudson	vcftools,old_pixy	baseline (r=mu rerun); fst_type wc,hudson so reruns carry WC-new	5.49e-9
+dxy_tet_2pop	dxy,fst	2	20	10,10	4	NA	100000	1720600	5.49e-9	0	0	10000	1	1000000	hudson	NA	baseline (r=mu rerun)	5.49e-9
+pi_dip_1pop_miss10	pi,thetaw,tajimaD	1	10	NA	2	NA	100000	1720600	5.49e-9	5	5	2000	1	NA	NA	vcftools,old_pixy	Phase B: missingness sweep	5.49e-9
+pi_dip_1pop_miss25	pi,thetaw,tajimaD	1	10	NA	2	NA	100000	1720600	5.49e-9	12	13	2000	1	NA	NA	vcftools,old_pixy	Phase B	5.49e-9
+pi_dip_1pop_miss50	pi,thetaw,tajimaD	1	10	NA	2	NA	100000	1720600	5.49e-9	25	25	2000	1	NA	NA	vcftools,old_pixy	Phase B	5.49e-9
+pi_dip_1pop_miss75	pi,thetaw,tajimaD	1	10	NA	2	NA	100000	1720600	5.49e-9	37	38	2000	1	NA	NA	vcftools,old_pixy	Phase B	5.49e-9
+pi_tet_1pop_miss10	pi,thetaw,tajimaD	1	10	NA	4	NA	100000	1720600	5.49e-9	5	5	2000	1	NA	NA	NA	Phase B	5.49e-9
+pi_tet_1pop_miss25	pi,thetaw,tajimaD	1	10	NA	4	NA	100000	1720600	5.49e-9	12	13	2000	1	NA	NA	NA	Phase B; smoke-test arm	5.49e-9
+pi_tet_1pop_miss50	pi,thetaw,tajimaD	1	10	NA	4	NA	100000	1720600	5.49e-9	25	25	2000	1	NA	NA	NA	Phase B	5.49e-9
+pi_tet_1pop_miss75	pi,thetaw,tajimaD	1	10	NA	4	NA	100000	1720600	5.49e-9	37	38	2000	1	NA	NA	NA	Phase B	5.49e-9
+dxy_dip_2pop_miss10	dxy,fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	5	5	2000	1	1000000	wc,hudson	vcftools,old_pixy	Phase B + D: FST piggybacks; wc,hudson	5.49e-9
+dxy_dip_2pop_miss25	dxy,fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	12	13	2000	1	1000000	wc,hudson	vcftools,old_pixy	Phase B + D; wc,hudson	5.49e-9
+dxy_dip_2pop_miss50	dxy,fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	25	25	2000	1	1000000	wc,hudson	vcftools,old_pixy	Phase B + D; wc,hudson	5.49e-9
+dxy_dip_2pop_miss75	dxy,fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	37	38	2000	1	1000000	wc,hudson	vcftools,old_pixy	Phase B + D; wc,hudson	5.49e-9
+dxy_tet_2pop_miss10	dxy,fst	2	20	10,10	4	NA	100000	1720600	5.49e-9	5	5	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_tet_2pop_miss25	dxy,fst	2	20	10,10	4	NA	100000	1720600	5.49e-9	12	13	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_tet_2pop_miss50	dxy,fst	2	20	10,10	4	NA	100000	1720600	5.49e-9	25	25	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_tet_2pop_miss75	dxy,fst	2	20	10,10	4	NA	100000	1720600	5.49e-9	37	38	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_hex_2pop_miss10	dxy,fst	2	20	10,10	6	NA	100000	1720600	5.49e-9	5	5	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_hex_2pop_miss25	dxy,fst	2	20	10,10	6	NA	100000	1720600	5.49e-9	12	13	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_hex_2pop_miss50	dxy,fst	2	20	10,10	6	NA	100000	1720600	5.49e-9	25	25	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_hex_2pop_miss75	dxy,fst	2	20	10,10	6	NA	100000	1720600	5.49e-9	37	38	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_oct_2pop_miss10	dxy,fst	2	20	10,10	8	NA	100000	1720600	5.49e-9	5	5	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_oct_2pop_miss25	dxy,fst	2	20	10,10	8	NA	100000	1720600	5.49e-9	12	13	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_oct_2pop_miss50	dxy,fst	2	20	10,10	8	NA	100000	1720600	5.49e-9	25	25	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+dxy_oct_2pop_miss75	dxy,fst	2	20	10,10	8	NA	100000	1720600	5.49e-9	37	38	2000	1	1000000	hudson	NA	Phase B + D	5.49e-9
+pi_hex_1pop	pi,thetaw,tajimaD	1	10	NA	6	NA	100000	1720600	5.49e-9	0	0	10000	1	NA	NA	NA	Phase C: hex baseline	5.49e-9
+pi_hex_1pop_miss10	pi,thetaw,tajimaD	1	10	NA	6	NA	100000	1720600	5.49e-9	5	5	2000	1	NA	NA	NA	Phase B extended: hex missingness sweep	5.49e-9
+pi_hex_1pop_miss25	pi,thetaw,tajimaD	1	10	NA	6	NA	100000	1720600	5.49e-9	12	13	2000	1	NA	NA	NA	Phase B extended: hex missingness sweep	5.49e-9
+pi_hex_1pop_miss50	pi,thetaw,tajimaD	1	10	NA	6	NA	100000	1720600	5.49e-9	25	25	2000	1	NA	NA	NA	Phase B extended: hex missingness sweep	5.49e-9
+pi_hex_1pop_miss75	pi,thetaw,tajimaD	1	10	NA	6	NA	100000	1720600	5.49e-9	37	38	2000	1	NA	NA	NA	Phase B extended: hex missingness sweep	5.49e-9
+pi_oct_1pop	pi,thetaw,tajimaD	1	10	NA	8	NA	100000	1720600	5.49e-9	0	0	10000	1	NA	NA	NA	Phase C: oct baseline	5.49e-9
+pi_oct_1pop_miss10	pi,thetaw,tajimaD	1	10	NA	8	NA	100000	1720600	5.49e-9	5	5	2000	1	NA	NA	NA	Phase B extended: oct missingness sweep	5.49e-9
+pi_oct_1pop_miss25	pi,thetaw,tajimaD	1	10	NA	8	NA	100000	1720600	5.49e-9	12	13	2000	1	NA	NA	NA	Phase B extended: oct missingness sweep	5.49e-9
+pi_oct_1pop_miss50	pi,thetaw,tajimaD	1	10	NA	8	NA	100000	1720600	5.49e-9	25	25	2000	1	NA	NA	NA	Phase B extended: oct missingness sweep	5.49e-9
+pi_oct_1pop_miss75	pi,thetaw,tajimaD	1	10	NA	8	NA	100000	1720600	5.49e-9	37	38	2000	1	NA	NA	NA	Phase B extended: oct missingness sweep	5.49e-9
+dxy_hex_2pop	dxy,fst	2	20	10,10	6	NA	100000	1720600	5.49e-9	0	0	10000	1	1000000	hudson	NA	Phase C	5.49e-9
+dxy_oct_2pop	dxy,fst	2	20	10,10	8	NA	100000	1720600	5.49e-9	0	0	10000	1	1000000	hudson	NA	Phase C	5.49e-9
+pi_mixed_dip_hap_2chr	pi	1	10	NA	2	1	100000	1720600	5.49e-9	0	0	2000	1	NA	NA	NA	Phase E: per-chrom mixed ploidy (dip+hap)	0
+pi_dip_1pop_theta005	pi	1	10	NA	2	NA	100000	1720600	7.267e-10	0	0	2000	1	NA	NA	vcftools,old_pixy	Phase G: theta=0.005 (mu = theta/(4*Ne))	0
+pi_dip_1pop_theta010	pi	1	10	NA	2	NA	100000	1720600	1.4534e-9	0	0	2000	1	NA	NA	vcftools,old_pixy	Phase G: theta=0.010	0
+pi_dip_1pop_theta025	pi	1	10	NA	2	NA	100000	1720600	3.6335e-9	0	0	2000	1	NA	NA	vcftools,old_pixy	Phase G: theta=0.025	0
+pi_dip_1pop_theta050	pi	1	10	NA	2	NA	100000	1720600	7.267e-9	0	0	2000	1	NA	NA	vcftools,old_pixy	Phase G: theta=0.050	0
+pi_dip_1pop_theta100	pi	1	10	NA	2	NA	100000	1720600	1.4534e-8	0	0	2000	1	NA	NA	vcftools,old_pixy	Phase G: theta=0.100	0
+pi_tet_1pop_theta005	pi	1	10	NA	4	NA	100000	1720600	7.267e-10	0	0	2000	1000001	NA	NA	NA	Phase G: theta=0.005 tetraploid (mu = theta/(4*Ne)); reseeded 2026-06-21 to displace 4n MC offset in fig3b	0
+pi_tet_1pop_theta010	pi	1	10	NA	4	NA	100000	1720600	1.4534e-9	0	0	2000	1000001	NA	NA	NA	Phase G: theta=0.010 tetraploid; reseeded 2026-06-21	0
+pi_tet_1pop_theta025	pi	1	10	NA	4	NA	100000	1720600	3.6335e-9	0	0	2000	1000001	NA	NA	NA	Phase G: theta=0.025 tetraploid; reseeded 2026-06-21	0
+pi_tet_1pop_theta050	pi	1	10	NA	4	NA	100000	1720600	7.267e-9	0	0	2000	1000001	NA	NA	NA	Phase G: theta=0.050 tetraploid; reseeded 2026-06-21	0
+pi_tet_1pop_theta100	pi	1	10	NA	4	NA	100000	1720600	1.4534e-8	0	0	2000	1000001	NA	NA	NA	Phase G: theta=0.100 tetraploid; reseeded 2026-06-21	0
+pi_hex_1pop_theta005	pi	1	10	NA	6	NA	100000	1720600	7.267e-10	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.005 hexaploid	0
+pi_hex_1pop_theta010	pi	1	10	NA	6	NA	100000	1720600	1.4534e-9	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.010 hexaploid	0
+pi_hex_1pop_theta025	pi	1	10	NA	6	NA	100000	1720600	3.6335e-9	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.025 hexaploid	0
+pi_hex_1pop_theta050	pi	1	10	NA	6	NA	100000	1720600	7.267e-9	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.050 hexaploid	0
+pi_hex_1pop_theta100	pi	1	10	NA	6	NA	100000	1720600	1.4534e-8	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.100 hexaploid	0
+pi_oct_1pop_theta005	pi	1	10	NA	8	NA	100000	1720600	7.267e-10	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.005 octoploid	0
+pi_oct_1pop_theta010	pi	1	10	NA	8	NA	100000	1720600	1.4534e-9	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.010 octoploid	0
+pi_oct_1pop_theta025	pi	1	10	NA	8	NA	100000	1720600	3.6335e-9	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.025 octoploid	0
+pi_oct_1pop_theta050	pi	1	10	NA	8	NA	100000	1720600	7.267e-9	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.050 octoploid	0
+pi_oct_1pop_theta100	pi	1	10	NA	8	NA	100000	1720600	1.4534e-8	0	0	2000	1	NA	NA	NA	Phase G ext: theta=0.100 octoploid	0
+pi_dip_1pop_tw	pi,thetaw,tajimaD	1	10	NA	2	NA	100000	1720600	5.49e-9	0	0	2000	1	NA	NA	NA	Phase F anchor: 2k-rep dip arm for thetaw/tajimaD 0% miss (legacy pi_dip_1pop untouched)	5.49e-9
+pi_tet_1pop_tw	pi,thetaw,tajimaD	1	10	NA	4	NA	100000	1720600	5.49e-9	0	0	2000	1	NA	NA	NA	Phase F anchor: 2k-rep tet arm for thetaw/tajimaD 0% miss (legacy pi_tet_1pop untouched)	5.49e-9
+dxy_dip_2pop_theta005	pi,dxy,fst	2	20	10,10	2	NA	100000	1720600	7.267e-10	0	0	2000	4000001	1000000	hudson	NA	Phase G ext: theta=0.005 diploid dxy/FST sweep	7.267e-10
+dxy_dip_2pop_theta010	pi,dxy,fst	2	20	10,10	2	NA	100000	1720600	1.4534e-9	0	0	2000	4000001	1000000	hudson	NA	Phase G ext: theta=0.010 diploid dxy/FST sweep	1.4534e-9
+dxy_dip_2pop_theta025	pi,dxy,fst	2	20	10,10	2	NA	100000	1720600	3.6335e-9	0	0	2000	4000001	1000000	hudson	NA	Phase G ext: theta=0.025 diploid dxy/FST sweep	3.6335e-9
+dxy_dip_2pop_theta050	pi,dxy,fst	2	20	10,10	2	NA	100000	1720600	7.267e-9	0	0	2000	4000001	1000000	hudson	NA	Phase G ext: theta=0.050 diploid dxy/FST sweep	7.267e-9
+dxy_dip_2pop_theta100	pi,dxy,fst	2	20	10,10	2	NA	100000	1720600	1.4534e-8	0	0	2000	4000001	1000000	hudson	NA	Phase G ext: theta=0.100 diploid dxy/FST sweep	1.4534e-8
+dxy_tet_2pop_theta005	pi,dxy,fst	2	20	10,10	4	NA	100000	1720600	7.267e-10	0	0	2000	5000001	1000000	hudson	NA	Phase G ext: theta=0.005 tetraploid dxy/FST sweep; per-ploidy seed offset to avoid MC correlation	7.267e-10
+dxy_tet_2pop_theta010	pi,dxy,fst	2	20	10,10	4	NA	100000	1720600	1.4534e-9	0	0	2000	5000001	1000000	hudson	NA	Phase G ext: theta=0.010 tetraploid dxy/FST sweep	1.4534e-9
+dxy_tet_2pop_theta025	pi,dxy,fst	2	20	10,10	4	NA	100000	1720600	3.6335e-9	0	0	2000	5000001	1000000	hudson	NA	Phase G ext: theta=0.025 tetraploid dxy/FST sweep	3.6335e-9
+dxy_tet_2pop_theta050	pi,dxy,fst	2	20	10,10	4	NA	100000	1720600	7.267e-9	0	0	2000	5000001	1000000	hudson	NA	Phase G ext: theta=0.050 tetraploid dxy/FST sweep	7.267e-9
+dxy_tet_2pop_theta100	pi,dxy,fst	2	20	10,10	4	NA	100000	1720600	1.4534e-8	0	0	2000	5000001	1000000	hudson	NA	Phase G ext: theta=0.100 tetraploid dxy/FST sweep	1.4534e-8
+dxy_hex_2pop_theta005	pi,dxy,fst	2	20	10,10	6	NA	100000	1720600	7.267e-10	0	0	2000	6000001	1000000	hudson	NA	Phase G ext: theta=0.005 hexaploid dxy/FST sweep	7.267e-10
+dxy_hex_2pop_theta010	pi,dxy,fst	2	20	10,10	6	NA	100000	1720600	1.4534e-9	0	0	2000	6000001	1000000	hudson	NA	Phase G ext: theta=0.010 hexaploid dxy/FST sweep	1.4534e-9
+dxy_hex_2pop_theta025	pi,dxy,fst	2	20	10,10	6	NA	100000	1720600	3.6335e-9	0	0	2000	6000001	1000000	hudson	NA	Phase G ext: theta=0.025 hexaploid dxy/FST sweep	3.6335e-9
+dxy_hex_2pop_theta050	pi,dxy,fst	2	20	10,10	6	NA	100000	1720600	7.267e-9	0	0	2000	6000001	1000000	hudson	NA	Phase G ext: theta=0.050 hexaploid dxy/FST sweep	7.267e-9
+dxy_hex_2pop_theta100	pi,dxy,fst	2	20	10,10	6	NA	100000	1720600	1.4534e-8	0	0	2000	6000001	1000000	hudson	NA	Phase G ext: theta=0.100 hexaploid dxy/FST sweep	1.4534e-8
+dxy_oct_2pop_theta005	pi,dxy,fst	2	20	10,10	8	NA	100000	1720600	7.267e-10	0	0	2000	7000001	1000000	hudson	NA	Phase G ext: theta=0.005 octoploid dxy/FST sweep	7.267e-10
+dxy_oct_2pop_theta010	pi,dxy,fst	2	20	10,10	8	NA	100000	1720600	1.4534e-9	0	0	2000	7000001	1000000	hudson	NA	Phase G ext: theta=0.010 octoploid dxy/FST sweep	1.4534e-9
+dxy_oct_2pop_theta025	pi,dxy,fst	2	20	10,10	8	NA	100000	1720600	3.6335e-9	0	0	2000	7000001	1000000	hudson	NA	Phase G ext: theta=0.025 octoploid dxy/FST sweep	3.6335e-9
+dxy_oct_2pop_theta050	pi,dxy,fst	2	20	10,10	8	NA	100000	1720600	7.267e-9	0	0	2000	7000001	1000000	hudson	NA	Phase G ext: theta=0.050 octoploid dxy/FST sweep	7.267e-9
+dxy_oct_2pop_theta100	pi,dxy,fst	2	20	10,10	8	NA	100000	1720600	1.4534e-8	0	0	2000	7000001	1000000	hudson	NA	Phase G ext: theta=0.100 octoploid dxy/FST sweep	1.4534e-8
+wcfst_dip_2pop	fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	0	0	2000	1	1000000	wc	old_pixy	WC-FST band-aid for FigS2 (new + old, old at fst_maf_filter=0); merged into dxy_dip_2pop post-hoc	5.49e-9
+wcfst_dip_2pop_miss10	fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	5	5	2000	1	1000000	wc	old_pixy	WC-FST band-aid for FigS2 (new + old, old at fst_maf_filter=0); merged into dxy_dip_2pop_miss10 post-hoc	5.49e-9
+wcfst_dip_2pop_miss25	fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	12	13	2000	1	1000000	wc	old_pixy	WC-FST band-aid for FigS2 (new + old, old at fst_maf_filter=0); merged into dxy_dip_2pop_miss25 post-hoc	5.49e-9
+wcfst_dip_2pop_miss50	fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	25	25	2000	1	1000000	wc	old_pixy	WC-FST band-aid for FigS2 (new + old, old at fst_maf_filter=0); merged into dxy_dip_2pop_miss50 post-hoc	5.49e-9
+wcfst_dip_2pop_miss75	fst	2	20	10,10	2	NA	100000	1720600	5.49e-9	37	38	2000	1	1000000	wc	old_pixy	WC-FST band-aid for FigS2 (new + old, old at fst_maf_filter=0); merged into dxy_dip_2pop_miss75 post-hoc	5.49e-9

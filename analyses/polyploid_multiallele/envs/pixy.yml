@@ -1,0 +1,14 @@
+name: pixy
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - bioconda::htslib
+  - bioconda::samtools=1.21
+  - python=3.13
+  - pip
+  - pip:
+    # pinned to a commit, not the biallelic-fst branch: multiallelic Hudson FST
+    # (--fst_biallelic) is unreleased, and a branch pin would not be reproducible.
+    - git+https://github.com/ksamuk/pixy@02d6d91

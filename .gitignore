@@ -1,0 +1,37 @@
+# R / RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# SLURM / logs
+logs/
+*.out
+*.err
+slurm-*.out
+
+# Large regeneratable data (not tracked; see README "Regenerating the input data")
+**/data/raw/
+**/data/vcfs/
+**/data/reference/
+**/data/bams/
+**/pixy_out/
+analyses/polyploid_multiallele/data/aggregated/
+analyses/tajima_multiallelic_variance/data/
+*.vcf
+*.vcf.gz
+*.bcf
+*.bam
+*.bai
+*.csi
+*.tbi
+
+# OS
+.DS_Store
+Thumbs.db

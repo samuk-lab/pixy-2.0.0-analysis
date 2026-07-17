@@ -1,0 +1,21 @@
+# 8 SPI + 8 TRE, autotetraploid Arabidopsis arenosa, from PRJNA484107
+# (Monnahan et al. 2019, Nat Ecol Evol). Copied verbatim from
+# sprite_validation/config/pops_arenosa.tsv — the two largest 4x populations
+# in the project, first 8 samples per pop by run_accession.
+sample_id	population	ena_run_accession	fastq_ftp
+SRR7637273	SPI	SRR7637273	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/003/SRR7637273/SRR7637273.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/003/SRR7637273/SRR7637273_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/003/SRR7637273/SRR7637273_2.fastq.gz
+SRR7637274	SPI	SRR7637274	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/004/SRR7637274/SRR7637274.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/004/SRR7637274/SRR7637274_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/004/SRR7637274/SRR7637274_2.fastq.gz
+SRR7637275	SPI	SRR7637275	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/005/SRR7637275/SRR7637275.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/005/SRR7637275/SRR7637275_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/005/SRR7637275/SRR7637275_2.fastq.gz
+SRR7637276	SPI	SRR7637276	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/006/SRR7637276/SRR7637276.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/006/SRR7637276/SRR7637276_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/006/SRR7637276/SRR7637276_2.fastq.gz
+SRR7637280	SPI	SRR7637280	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637280/SRR7637280.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637280/SRR7637280_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637280/SRR7637280_2.fastq.gz
+SRR7637527	SPI	SRR7637527	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/007/SRR7637527/SRR7637527.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/007/SRR7637527/SRR7637527_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/007/SRR7637527/SRR7637527_2.fastq.gz
+SRR7637528	SPI	SRR7637528	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/008/SRR7637528/SRR7637528.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/008/SRR7637528/SRR7637528_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/008/SRR7637528/SRR7637528_2.fastq.gz
+SRR7637529	SPI	SRR7637529	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/009/SRR7637529/SRR7637529.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/009/SRR7637529/SRR7637529_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/009/SRR7637529/SRR7637529_2.fastq.gz
+SRR7637283	TRE	SRR7637283	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/003/SRR7637283/SRR7637283.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/003/SRR7637283/SRR7637283_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/003/SRR7637283/SRR7637283_2.fastq.gz
+SRR7637284	TRE	SRR7637284	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/004/SRR7637284/SRR7637284.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/004/SRR7637284/SRR7637284_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/004/SRR7637284/SRR7637284_2.fastq.gz
+SRR7637289	TRE	SRR7637289	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/009/SRR7637289/SRR7637289.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/009/SRR7637289/SRR7637289_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/009/SRR7637289/SRR7637289_2.fastq.gz
+SRR7637290	TRE	SRR7637290	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637290/SRR7637290.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637290/SRR7637290_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637290/SRR7637290_2.fastq.gz
+SRR7637348	TRE	SRR7637348	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/008/SRR7637348/SRR7637348.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/008/SRR7637348/SRR7637348_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/008/SRR7637348/SRR7637348_2.fastq.gz
+SRR7637392	TRE	SRR7637392	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/002/SRR7637392/SRR7637392.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/002/SRR7637392/SRR7637392_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/002/SRR7637392/SRR7637392_2.fastq.gz
+SRR7637400	TRE	SRR7637400	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637400/SRR7637400.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637400/SRR7637400_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/000/SRR7637400/SRR7637400_2.fastq.gz
+SRR7637475	TRE	SRR7637475	ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/005/SRR7637475/SRR7637475.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/005/SRR7637475/SRR7637475_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR763/005/SRR7637475/SRR7637475_2.fastq.gz

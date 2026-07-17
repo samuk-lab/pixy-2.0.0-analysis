@@ -1,0 +1,15 @@
+# Regenerable data — do not commit
+data/vcfs/
+data/pixy_old_out/
+data/pixy_new_out/
+data/zarr/
+logs/
+
+# Keep summary TSVs and the aggregated table
+!data/results/
+data/results/*.lock
+
+# R session artefacts
+analysis/.Rhistory
+analysis/*.Rdata
+analysis/figures/

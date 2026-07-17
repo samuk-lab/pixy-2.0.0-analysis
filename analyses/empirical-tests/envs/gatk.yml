@@ -1,0 +1,22 @@
+name: empirical_tests_gatk
+# GATK HaplotypeCaller env (per-sample HC -> CombineGVCFs -> GenotypeGVCFs).
+# gatk4 vendors openjdk; pin to >= 4.5 for the GVCF + GenotypeGVCFs polyploid
+# path which has had ongoing fixes through the 4.4/4.5 series.
+channels:
+  - conda-forge
+  - bioconda
+channel_priority: strict
+dependencies:
+  - python=3.11
+  - gatk4>=4.5
+  - bcftools=1.23.1
+  - samtools=1.23.1
+  - htslib=1.23.1
+  - tabix
+  - bash
+  - coreutils
+  - findutils
+  - gawk
+  - grep
+  - sed
+  - parallel

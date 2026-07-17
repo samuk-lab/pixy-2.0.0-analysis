@@ -1,0 +1,15 @@
+# Regenerable from 02_run_arm.sh (simulated VCFs + per-replicate pixy output)
+data/vcfs/
+data/pixy_out/
+data/_work/
+data/*.part_*.tsv
+data/*.part_*.tsv.header
+
+# SLURM job output
+logs/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
