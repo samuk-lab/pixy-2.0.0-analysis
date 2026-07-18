@@ -526,10 +526,19 @@ empirical <- function(file, arm) {
         t <- t.test(mu_[ok], bi[ok], paired = TRUE)
         upl <- (mu_[ok] - bi[ok]) / bi[ok]
         cu <- ci(upl)
-        # density proxy = multiallelic snps gained (fst snps multi - biallelic)
+        # density = multiallelic SNP sites per window, counted directly from the
+        # filtered VCF (bcftools -m3 -v snps; see analyses/empirical-tests/count_multi.sbatch).
+        # the old fst-snp proxy (n_snps_fst_multi - biallelic) tracks the true count
+        # only at rho ~ 0.33, so we use the direct per-window count here.
         dens <- NULL
-        if (all(c("n_snps_fst_multi", "n_snps_fst_biallelic") %in% names(d)))
-            dens <- (d$n_snps_fst_multi - d$n_snps_fst_biallelic)[ok]
+        mfile <- file.path(EMP, sub("\\.joined\\.tsv$", ".multi_per_window.tsv", file))
+        if (file.exists(mfile)) {
+            mc <- read_tsv(mfile, col_names = c("window_pos_1", "n_multi"),
+                           show_col_types = FALSE, progress = FALSE)
+            dd <- dplyr::left_join(d["window_pos_1"], mc, by = "window_pos_1")
+            dd$n_multi[is.na(dd$n_multi)] <- 0
+            dens <- dd$n_multi[ok]
+        }
         emit("\n- pi[%s]: paired mean uplift = %.5f [%.5f, %.5f], p = %s; relative uplift = %s [%s, %s]",
              p, t$estimate, t$conf.int[1], t$conf.int[2],
              format.pval(t$p.value, digits = 2), pct(cu$mean), pct(cu$lo), pct(cu$hi))

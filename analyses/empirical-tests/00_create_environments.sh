@@ -44,10 +44,12 @@ gatk_jid=$(submit_env empirical_tests_gatk  gatk.yml)
 echo "  empirical_tests_gatk   -> job ${gatk_jid}"
 pixy_jid=$(submit_env empirical_tests_pixy  pixy.yml)
 echo "  empirical_tests_pixy   -> job ${pixy_jid}"
+map_jid=$(submit_env empirical_tests_mappability mappability.yml)
+echo "  empirical_tests_mappability -> job ${map_jid}"
 
-all_jids="${fetch_jid}:${gatk_jid}:${pixy_jid}"
+all_jids="${fetch_jid}:${gatk_jid}:${pixy_jid}:${map_jid}"
 echo ""
-echo "Monitor: squeue -u \$USER -j ${fetch_jid},${gatk_jid},${pixy_jid}"
+echo "Monitor: squeue -u \$USER -j ${fetch_jid},${gatk_jid},${pixy_jid},${map_jid}"
 
 if [[ "${CHAIN}" == "true" ]]; then
   echo ""

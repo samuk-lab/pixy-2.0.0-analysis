@@ -39,6 +39,7 @@ else
     FST_TYPE=hudson
 fi
 DATASET_DIR="${PROJECT_DIR}/data/${ARM_ID}"
+# all_sites.vcf.gz is the filtered all-sites vcf finalized by 05c_filter.sbatch
 VCF="${DATASET_DIR}/vcfs/${ARM_ID}.all_sites.vcf.gz"
 POPS_SRC="${PROJECT_DIR}/config/pops_${ARM_ID}.tsv"
 PIXY_POPS="${DATASET_DIR}/pops_${ARM_ID}.pixy.tsv"

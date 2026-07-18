@@ -1,0 +1,17 @@
+name: empirical_tests_mappability
+# genmap mappability mask + bed ops (05b_mappability, 05c_filter site mask)
+channels:
+  - conda-forge
+  - bioconda
+channel_priority: strict
+dependencies:
+  - python=3.11
+  - genmap=1.3.0
+  - bedtools=2.31.1
+  - bcftools=1.23.1
+  - htslib=1.23.1
+  - samtools=1.23.1
+  - tabix
+  - bash
+  - coreutils
+  - gawk

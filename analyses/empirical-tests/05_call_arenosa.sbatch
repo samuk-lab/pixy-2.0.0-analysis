@@ -7,9 +7,8 @@
 #SBATCH --time=24:00:00
 #SBATCH --output=logs/call_arenosa_%j.out
 #SBATCH --error=logs/call_arenosa_%j.err
-# gatk joint-call, 16 arenosa on LR999451.1, autotetraploid, all-sites vcf
-# mirrors 03 but ploidy=4; strip PL before trim-alt-alleles (bcftools 1.23.1
-# assumes diploid PL length and crashes on multiallelic otherwise)
+# gatk joint-call, 16 arenosa on LR999451.1, autotetraploid, raw all-sites vcf
+# mirrors 03 but ploidy=4; 05c_filter finalizes the filtered all-sites vcf
 set -euo pipefail
 
 PROJECT_DIR="${PROJECT_DIR:-${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")" && pwd)}}"
@@ -59,8 +58,6 @@ TMP_DIR="${VCF_DIR}/tmp"
 mkdir -p "${VCF_DIR}" "${GVCF_DIR}" "${TMP_DIR}"
 
 RAW_VCF="${VCF_DIR}/${ARM_ID}.gatk.p${PLOIDY}.raw.vcf.gz"
-RAW_NOPL_VCF="${VCF_DIR}/${ARM_ID}.gatk.p${PLOIDY}.raw.no_pl.vcf.gz"
-ALL_VCF="${VCF_DIR}/${ARM_ID}.all_sites.vcf.gz"
 COMBINED_GVCF="${VCF_DIR}/${ARM_ID}.combined.g.vcf.gz"
 
 JAVA_OPTS_PER_SAMPLE="-Xmx4g -XX:ParallelGCThreads=1"
@@ -121,26 +118,10 @@ gatk --java-options "-Xmx32g -XX:ParallelGCThreads=2" GenotypeGVCFs \
     --tmp-dir "${TMP_DIR}"
 [[ -s "${RAW_VCF}.tbi" ]] || bcftools index -t "${RAW_VCF}"
 
-# strip PL before view --trim-alt-alleles. at ploidy 4 PL length is
-# C(N+3,4) not C(N+1,2); bcftools 1.23.1 assumes diploid and crashes on
-# the first multiallelic site otherwise
-info "[${ARM_ID}] stripping FORMAT/PL,AD,GQ,PGT,PID,PS,MIN_DP,RGQ,SB -> ${RAW_NOPL_VCF}"
-rm -f "${RAW_NOPL_VCF}"{,.tbi}
-bcftools annotate \
-    -x 'FORMAT/PL,FORMAT/AD,FORMAT/GQ,FORMAT/PGT,FORMAT/PID,FORMAT/PS,FORMAT/MIN_DP,FORMAT/RGQ,FORMAT/SB' \
-    "${RAW_VCF}" -Oz -o "${RAW_NOPL_VCF}"
-bcftools index -t "${RAW_NOPL_VCF}"
-
-info "[${ARM_ID}] trim-alt-alleles -> ${ALL_VCF}"
-rm -f "${ALL_VCF}"{,.tbi}
-bcftools view \
-    --threads "${THREADS}" \
-    --trim-alt-alleles \
-    "${RAW_NOPL_VCF}" \
-    -Oz -o "${ALL_VCF}"
-bcftools index -t "${ALL_VCF}"
-
+# drop combined gvcf; keep the raw vcf (05c_filter finalizes the all-sites vcf).
+# NB 05c defers --trim-alt-alleles until after FORMAT/PL is stripped, so the
+# ploidy-4 PL-length crash in bcftools 1.23.1 is still avoided
 rm -f "${COMBINED_GVCF}"{,.tbi}
 
-info "[${ARM_ID}] all-sites VCF: ${ALL_VCF}"
-info "[${ARM_ID}] call done"
+info "[${ARM_ID}] raw all-sites VCF: ${RAW_VCF}"
+info "[${ARM_ID}] call done (run 05b_mappability + 05c_filter next)"

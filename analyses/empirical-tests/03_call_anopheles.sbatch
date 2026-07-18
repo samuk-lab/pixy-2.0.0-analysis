@@ -8,7 +8,8 @@
 #SBATCH --output=logs/call_anopheles_%j.out
 #SBATCH --error=logs/call_anopheles_%j.err
 # gatk joint-call, 16 anopheles on chr3R, diploid, all-sites vcf for pixy
-# per-sample HC -> CombineGVCFs -> GenotypeGVCFs -> strip FORMAT + trim alleles
+# per-sample HC -> CombineGVCFs -> GenotypeGVCFs -all-sites -> raw multi-sample vcf
+# (05c_filter finalizes the filtered all-sites vcf; keeps INFO/FORMAT annots for it)
 set -euo pipefail
 
 PROJECT_DIR="${PROJECT_DIR:-${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")" && pwd)}}"
@@ -59,8 +60,6 @@ TMP_DIR="${VCF_DIR}/tmp"
 mkdir -p "${VCF_DIR}" "${GVCF_DIR}" "${TMP_DIR}"
 
 RAW_VCF="${VCF_DIR}/${ARM_ID}.gatk.p${PLOIDY}.raw.vcf.gz"
-RAW_NOPL_VCF="${VCF_DIR}/${ARM_ID}.gatk.p${PLOIDY}.raw.no_pl.vcf.gz"
-ALL_VCF="${VCF_DIR}/${ARM_ID}.all_sites.vcf.gz"
 COMBINED_GVCF="${VCF_DIR}/${ARM_ID}.combined.g.vcf.gz"
 
 # per-sample java heap; 16 x 4G = 64G, matches slurm mem
@@ -122,26 +121,8 @@ gatk --java-options "-Xmx48g -XX:ParallelGCThreads=2" GenotypeGVCFs \
     --tmp-dir "${TMP_DIR}"
 [[ -s "${RAW_VCF}.tbi" ]] || bcftools index -t "${RAW_VCF}"
 
-# strip FORMAT/PL before view --trim-alt-alleles; bcftools 1.23.1 assumes
-# diploid PL length on allele removal. pixy only needs GT
-info "[${ARM_ID}] stripping FORMAT/PL,AD,GQ,PGT,PID,PS,MIN_DP,RGQ,SB -> ${RAW_NOPL_VCF}"
-rm -f "${RAW_NOPL_VCF}"{,.tbi}
-bcftools annotate \
-    -x 'FORMAT/PL,FORMAT/AD,FORMAT/GQ,FORMAT/PGT,FORMAT/PID,FORMAT/PS,FORMAT/MIN_DP,FORMAT/RGQ,FORMAT/SB' \
-    "${RAW_VCF}" -Oz -o "${RAW_NOPL_VCF}"
-bcftools index -t "${RAW_NOPL_VCF}"
-
-info "[${ARM_ID}] trim-alt-alleles -> ${ALL_VCF}"
-rm -f "${ALL_VCF}"{,.tbi}
-bcftools view \
-    --threads "${THREADS}" \
-    --trim-alt-alleles \
-    "${RAW_NOPL_VCF}" \
-    -Oz -o "${ALL_VCF}"
-bcftools index -t "${ALL_VCF}"
-
-# drop combined gvcf; keep the all-sites vcf
+# drop combined gvcf; keep the raw vcf (05c_filter finalizes the all-sites vcf)
 rm -f "${COMBINED_GVCF}"{,.tbi}
 
-info "[${ARM_ID}] all-sites VCF: ${ALL_VCF}"
-info "[${ARM_ID}] call done"
+info "[${ARM_ID}] raw all-sites VCF: ${RAW_VCF}"
+info "[${ARM_ID}] call done (run 05b_mappability + 05c_filter next)"
