@@ -22,7 +22,6 @@ slurm-*.out
 **/data/reference/
 **/data/bams/
 **/pixy_out/
-analyses/polyploid_multiallele/data/aggregated/
 analyses/tajima_multiallelic_variance/data/
 *.vcf
 *.vcf.gz
