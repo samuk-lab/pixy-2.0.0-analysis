@@ -4,6 +4,7 @@
 .RData
 .Ruserdata
 *.Rproj
+Rplots.pdf
 
 # Python
 __pycache__/
@@ -34,3 +35,4 @@ analyses/tajima_multiallelic_variance/data/
 # OS
 .DS_Store
 Thumbs.db
+.Rproj.user

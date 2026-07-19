@@ -77,6 +77,42 @@ th <- dat |>
   distinct(stat, ploidy, miss_pct, theoretical) |>
   filter(!is.na(theoretical))
 
+# extend the theoretical line to the full panel width: keep the interior
+# points (preserves tajimaD's non-flat shape) and append endpoints at the
+# panel edges, linearly extrapolating the end segments. the edges depend on
+# the violin width (the widest x layer) + the default 5% expansion, so we
+# measure the trained x-range from a probe build rather than guess it, then
+# pin the axis to exactly that range so the extended line can't re-inflate it
+probe <- ggplot() +
+  geom_violin(data = per_rep, aes(miss_pct, value, group = miss_pct),
+              width = 0.12, position = "identity") +
+  facet_grid(stat ~ ploidy, scales = "free_y")
+xlim_data <- ggplot_build(probe)$layout$panel_scales_x[[1]]$get_limits()
+x_lo <- xlim_data[1] - 0.05 * diff(xlim_data)
+x_hi <- xlim_data[2] + 0.05 * diff(xlim_data)
+
+extrap <- function(x0, xs, ys) {
+  o <- order(xs)
+  xs <- xs[o]; ys <- ys[o]
+  if (length(xs) < 2) return(ys[1])
+  if (x0 <= xs[1]) {
+    i <- 1
+  } else {
+    i <- length(xs) - 1
+  }
+  ys[i] + (ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]) * (x0 - xs[i])
+}
+
+th <- th |>
+  group_by(stat, ploidy) |>
+  group_modify(~ bind_rows(
+    tibble(miss_pct = x_lo, theoretical = extrap(x_lo, .x$miss_pct, .x$theoretical)),
+    .x,
+    tibble(miss_pct = x_hi, theoretical = extrap(x_hi, .x$miss_pct, .x$theoretical))
+  )) |>
+  ungroup() |>
+  arrange(stat, ploidy, miss_pct)
+
 multi_col <- "#0F6F57"
 
 # per-panel y-limits anchored to the theoretical line so every free_y axis
@@ -107,7 +143,8 @@ fig <- ggplot(dat, aes(miss_pct, mean)) +
   geom_point(size = 1.6, colour = multi_col) +
   geom_line(data = th,
             aes(miss_pct, theoretical, linetype = "theoretical"),
-            colour = "grey20", linewidth = 0.4, inherit.aes = FALSE) +
+            colour = "grey20", linewidth = 0.4, lineend = "round",
+            inherit.aes = FALSE) +
   geom_blank(data = ylim_panel, aes(miss_pct, y), inherit.aes = FALSE) +
   facet_grid(stat ~ ploidy,
              scales = "free_y",
@@ -116,9 +153,12 @@ fig <- ggplot(dat, aes(miss_pct, mean)) +
                ploidy = c(`2n` = "Diploid", `4n` = "Tetraploid",
                           `6n` = "Hexaploid", `8n` = "Octoploid"))) +
   scale_x_continuous(labels = scales::percent,
-                     breaks = c(0, .25, .5, .75)) +
+                     breaks = c(0, .25, .5, .75),
+                     limits = c(x_lo, x_hi),
+                     expand = c(0, 0),
+                     oob = scales::oob_keep) +
   scale_colour_manual(values = c("pixy 2.0.0" = multi_col), name = NULL) +
-  scale_linetype_manual(values = c(theoretical = "dashed"), name = NULL) +
+  scale_linetype_manual(values = c(theoretical = "12"), name = NULL) +
   labs(x = "Missingness", y = "Mean estimate") +
   theme_pixy() +
   theme(strip.text.x = element_text(hjust = 0.5, face = "plain",
@@ -136,6 +176,6 @@ fig <- ggplot(dat, aes(miss_pct, mean)) +
         legend.key        = element_blank(),
         legend.text       = element_text(size = PIXY_BASE_SIZE - 5))
 
-fig
+if (interactive()) print(fig)
 
 pixy_save(fig, fig_path, width = 9, height = 8)
