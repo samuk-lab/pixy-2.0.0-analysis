@@ -103,7 +103,8 @@ p_a <- ggplot(dat,
   geom_point(size = 2.0) +
   geom_line(data = th,
             aes(x = theta_nominal, y = theoretical, linetype = "theoretical"),
-            colour = "grey20", linewidth = 0.4, inherit.aes = FALSE) +
+            colour = "grey20", linewidth = 0.4, lineend = "round",
+            inherit.aes = FALSE) +
   # fix the fst row to 0.223 .. 0.247: the ~0.004 divergence is ~16% of panel
   # height and legible, while 1 bootstrap SE (~5e-4) reads as noise. fixed not
   # free so both ploidy columns share a scale
@@ -124,7 +125,7 @@ p_a <- ggplot(dat,
                       labels = estimator_labels_short, name = NULL,
                       guide  = guide_legend(direction = "vertical",
                                             override.aes = list(shape = NA))) +
-  scale_linetype_manual(values = c(theoretical = "longdash"), name = NULL) +
+  scale_linetype_manual(values = c(theoretical = "12"), name = NULL) +
   labs(x = expression(theta == 4 * N[e] * mu),
        y = "Mean estimate") +
   theme_pixy() +

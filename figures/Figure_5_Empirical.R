@@ -45,7 +45,26 @@ load_arm <- function(arm_id) {
     stop("missing aggregated TSV: ", path,
          "\nRun 07_compare.sbatch and sync data/aggregated/ before plotting.")
   }
-  read_tsv(path, show_col_types = FALSE) |> mutate(arm_id = arm_id)
+  d <- read_tsv(path, show_col_types = FALSE) |> mutate(arm_id = arm_id)
+  # per-window multiallelic-SNP count (count_multi.sbatch; counted directly from the
+  # filtered VCF). colour in the scatter is the multiallelic proportion -- multiallelic
+  # sites as a fraction of comparable sites (n_sites_dxy = sites with data in both pops).
+  # comparable sites are the pi/dxy denominator, so this proportion (not raw count) is what
+  # actually predicts the biallelic->multiallelic uplift: a handful of multiallelic
+  # sites in a heavily-filtered, low-denominator window moves the estimate a lot.
+  mpath <- file.path(EMP_DIR, paste0(arm_id, ".multi_per_window.tsv"))
+  if (file.exists(mpath)) {
+    mc <- read_tsv(mpath, col_names = c("window_pos_1", "n_multi"),
+                   show_col_types = FALSE)
+    d <- d |>
+      left_join(mc, by = "window_pos_1") |>
+      mutate(
+        n_multi    = replace_na(n_multi, 0),
+        multi_dens = if_else(n_sites_dxy_multi > 0,
+                             n_multi / n_sites_dxy_multi, NA_real_)
+      )
+  }
+  d
 }
 
 raw <- map_dfr(arms$arm_id, load_arm) |>
@@ -57,7 +76,7 @@ raw <- map_dfr(arms$arm_id, load_arm) |>
 ##########
 # pi: avg_pi_<POP>_<variant>; pivot to (arm, pop, biallelic, multi)
 pi_long <- raw |>
-  select(species_label, chromosome, window_pos_1, starts_with("avg_pi_")) |>
+  select(species_label, chromosome, window_pos_1, multi_dens, starts_with("avg_pi_")) |>
   pivot_longer(
     cols          = starts_with("avg_pi_"),
     names_to      = c("pop", "variant"),
@@ -66,13 +85,13 @@ pi_long <- raw |>
   ) |>
   pivot_wider(names_from = variant, values_from = value) |>
   mutate(statistic = "pi", group = pop) |>
-  select(species_label, statistic, group, chromosome, window_pos_1, biallelic, multi)
+  select(species_label, statistic, group, chromosome, window_pos_1, multi_dens, biallelic, multi)
 
 dxy_long <- raw |>
   transmute(species_label,
             statistic = "dxy",
             group     = paste(pop1, pop2, sep = "-"),
-            chromosome, window_pos_1,
+            chromosome, window_pos_1, multi_dens,
             biallelic = dxy_biallelic,
             multi     = dxy_multi)
 
@@ -80,7 +99,7 @@ fst_long <- raw |>
   transmute(species_label,
             statistic = "fst",
             group     = paste(pop1, pop2, sep = "-"),
-            chromosome, window_pos_1,
+            chromosome, window_pos_1, multi_dens,
             biallelic = fst_biallelic,
             multi     = fst_multi)
 
@@ -99,7 +118,7 @@ fit_stats <- long |>
     slope = coef(lm(multi ~ biallelic))[2],
     .groups = "drop"
   ) |>
-  mutate(label = sprintf("R^2 == %.3f", r2))
+  mutate(label = sprintf("R^2 == %.4f", r2))
 
 ##########
 # panel a: scatter, biallelic vs +multiallelic
@@ -112,10 +131,16 @@ stat_labeller <- as_labeller(
 p_a <- ggplot(long, aes(biallelic, multi)) +
   geom_abline(slope = 1, intercept = 0,
               linetype = "dashed", colour = "grey40", linewidth = 0.4) +
-  geom_point(alpha = 0.35, size = 0.9,
-             colour = "#3C3489") +
+  geom_point(aes(fill = multi_dens), alpha = 0.75, size = 2.5, shape = 21,
+             color = "grey25", stroke = 0.2) +
   geom_smooth(method = "lm", formula = y ~ x, se = FALSE,
               colour = "black", linewidth = 0.5) +
+  scale_fill_viridis_c(name = "Prop.\nmultiallelic",
+                         option = "viridis",
+                         trans  = "sqrt",
+                         breaks = c(0, 0.005, 0.02, 0.05),
+                         guide = guide_colourbar(barwidth  = unit(0.6, "lines"),
+                                                 barheight = unit(3.2, "lines"))) +
   geom_text(
     data = fit_stats,
     aes(x = -Inf, y = Inf, label = label),
@@ -124,12 +149,20 @@ p_a <- ggplot(long, aes(biallelic, multi)) +
   facet_grid2(species_label ~ statistic,
               scales = "free", independent = "all",
               labeller = labeller(statistic = stat_labeller)) +
-  labs(tag = "a",
-       x = "biallelic-only estimate",
-       y = "+multiallelic estimate") +
+  labs(x = "Biallelic estimate",
+       y = "Multiallelic estimate") +
   theme_pixy() +
-  theme(strip.text.x = element_text(face = "plain"),
-        strip.text.y = element_text(face = "italic", angle = 270))
+  theme(strip.text.x = element_text(hjust = 0.5, face = "plain",
+                                    size = (PIXY_BASE_SIZE - 1) * 0.85 * 1.35),
+        strip.text.y = element_text(face = "italic", angle = 270),
+        # small colourbar tucked into the bottom-left corner of the top-left (pi) panel
+        legend.position      = c(0.075, 0.525),
+        legend.justification = c(0, 0),
+        legend.direction     = "vertical",
+        legend.background    = element_rect(fill = alpha("white", 0.7), colour = NA),
+        legend.title         = element_text(size = PIXY_BASE_SIZE - 4),
+        legend.text          = element_text(size = PIXY_BASE_SIZE - 5),
+        legend.margin        = margin(2, 3, 2, 3))
 
 ##########
 # panel b: percent elevation vs biallelic estimate
@@ -171,4 +204,4 @@ fig <- p_a
 
 fig
 
-pixy_save(fig, fig_path, width = 11, height = 10)
+pixy_save(fig, fig_path, width = 11, height = 8)
