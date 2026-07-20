@@ -32,7 +32,7 @@ dat <- read_tsv(here("..", "analyses", "benchmark_multicore",
     elapsed_s_clean = as.numeric(str_extract(elapsed_s, "^[0-9.]+")),
     n_cores_num     = suppressWarnings(as.integer(n_cores)),
     statistic       = factor(statistic, levels = c("pi", "dxy", "fst")),
-    pixy_version    = factor(pixy_version, levels = c("0.93.1", "2.1.2"))
+    pixy_version    = factor(pixy_version, levels = c("0.95.01", "2.2.3"))
   ) |>
   filter(status == "OK", !is.na(elapsed_s_clean))
 
@@ -42,19 +42,19 @@ medians <- dat |>
   summarise(median_s = median(elapsed_s_clean), .groups = "drop")
 
 ##########
-# speedup vs 0.93.1 single-core
+# speedup vs 0.95.01 single-core
 ##########
 baseline_old <- medians |>
-  filter(pixy_version == "0.93.1") |>
+  filter(pixy_version == "0.95.01") |>
   select(statistic, baseline_old = median_s)
 
 speedup_old <- medians |>
-  filter(pixy_version == "2.1.2") |>
+  filter(pixy_version == "2.2.3") |>
   inner_join(baseline_old, by = "statistic") |>
   mutate(speedup = baseline_old / median_s)
 
 ##########
-# panel a: speedup vs 0.93.1
+# panel a: speedup vs 0.95.01
 ##########
 speedup_old_labels <- speedup_old %>%
   arrange(statistic, n_cores_num) %>%
@@ -88,8 +88,8 @@ speedup_old_labels <- speedup_old %>%
   scale_y_continuous(labels = function(x) paste0(x, "×")) +
   labs(
     tag = "a",
-    x = "pixy 2.0.0 cores",
-    y = "Relative speed vs. pixy 0.95.02"
+    x = "pixy 2.2.3 cores",
+    y = "Relative speed vs. pixy 0.95.01"
   ) +
   theme_pixy(base_size = 10) +
   theme(
@@ -100,7 +100,7 @@ speedup_old_labels <- speedup_old %>%
   ))
 
 ##########
-# panel b: peak rss vs 0.93.1
+# panel b: peak rss vs 0.95.01
 ##########
 
 # reload
@@ -111,15 +111,15 @@ dat <- read_tsv(here("..", "analyses", "benchmark_multicore",
     elapsed_s_clean = as.numeric(str_extract(elapsed_s, "^[0-9.]+")),
     rss_kb_clean = suppressWarnings(as.numeric(rss_kb)),
     n_cores_num  = suppressWarnings(as.integer(n_cores)),
-    pixy_version = factor(pixy_version, levels = c("0.93.1", "2.1.2")),
+    pixy_version = factor(pixy_version, levels = c("0.95.01", "2.2.3")),
     statistic    = factor(statistic, levels = c("pi", "dxy", "fst"),
                           labels = c("pi", "dxy", "fst")),
     arm_label = case_when(
-      pixy_version == "0.93.1" ~ "0.93.1\n(1)",
-      n_cores_num == 1         ~ "2.0.0\n(1)",
-      TRUE                     ~ paste0("2.0.0\n(", n_cores_num, ")")
+      pixy_version == "0.95.01" ~ "0.95.01\n(1)",
+      n_cores_num == 1         ~ "2.2.3\n(1)",
+      TRUE                     ~ paste0("2.2.3\n(", n_cores_num, ")")
     ),
-    arm_order = ifelse(pixy_version == "0.93.1", -1L, n_cores_num),
+    arm_order = ifelse(pixy_version == "0.95.01", -1L, n_cores_num),
     arm_label = fct_reorder(arm_label, arm_order)
   ) |>
   filter(status == "OK", !is.na(elapsed_s_clean))
@@ -129,11 +129,11 @@ rss_summary <- dat %>%
   mutate(rss_mb = rss_kb_clean / 1024) %>%
   group_by(statistic) %>%
   mutate(
-    baseline_rss = mean(rss_mb[arm_label == "0.93.1\n(1)"], na.rm = TRUE),
+    baseline_rss = mean(rss_mb[arm_label == "0.95.01\n(1)"], na.rm = TRUE),
     rel_rss = rss_mb / baseline_rss
   ) %>%
   ungroup() %>%
-  filter(arm_label != "0.93.1\n(1)") %>%
+  filter(arm_label != "0.95.01\n(1)") %>%
   group_by(statistic, arm_label, n_cores) %>%
   summarise(
     n           = n(),
@@ -173,8 +173,8 @@ p_b <- ggplot(rss_summary,
   ) +
   labs(
     tag = "b",
-    x   = "pixy 2.0.0 cores",
-    y   = "Percent of pixy 0.95.02 peak RSS"
+    x   = "pixy 2.2.3 cores",
+    y   = "Percent of pixy 0.95.01 peak RSS"
   ) +
   theme_pixy(base_size = 10) +
   scale_colour_pixy_statistic() +

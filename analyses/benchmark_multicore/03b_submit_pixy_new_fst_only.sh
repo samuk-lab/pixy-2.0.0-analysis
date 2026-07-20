@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# submit pixy 2.0.0 fst-only array jobs across all core counts
+# submit pixy 2.2.3 fst-only array jobs across all core counts
 # wraps 03_submit_pixy_new_all.sh with STATS=fst
-# run after 03a patches new_pixy. 04_aggregate de-dupes by (version,stat,cores,seed)
-# keeping last row, so reruns overwrite per seed
+# 04_aggregate de-dupes by (version,stat,cores,seed) keeping last row,
+# so reruns overwrite per seed
 # vars: DEP, CORES, ARRAY_SPEC
 
 set -euo pipefail
@@ -28,7 +28,7 @@ for ncores in ${CORES}; do
   fi
 done
 
-echo "=== Submitting pixy 2.0.0 FST benchmark (GitHub head) ===" >&2
+echo "=== Submitting pixy 2.2.3 FST benchmark ===" >&2
 echo "    Cores : ${CORES}" >&2
 echo "    Array : ${ARRAY_SPEC}" >&2
 [[ -n "${DEP}" ]] && echo "    Dep   : ${DEP}" >&2

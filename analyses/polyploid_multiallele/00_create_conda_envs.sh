@@ -10,7 +10,7 @@
 # envs:
 #   vcfsim    - simulation scripts; vcfsim from bioconda
 #   pixy      - current pixy from conda-forge, htslib/samtools from bioconda
-#   old_pixy  - pixy 0.95.02 from conda-forge, htslib/samtools from bioconda
+#   old_pixy  - pixy 0.95.01 from conda-forge, htslib/samtools from bioconda
 #   vcftools  - vcftools comparator (pi / Weir-Cockerham FST) + bcftools for
 #               header/concat in the mixed-ploidy arm
 #
@@ -129,16 +129,17 @@ done
 ##########
 # patches applied to installed env source files
 ##########
-# three upstream bugs worked around, each a literal find/replace in one env file.
+# one upstream bug worked around, a literal find/replace in one env file.
 # apply_patch is idempotent: skips if already patched, warns if neither old nor
 # new pattern matches (upstream changed the line).
 #
-#   1. pixy 0.95.02 mis-detects chromosomes from gzipped vcfs: its
-#      grep -v '#' <vcf> treats .vcf.gz as binary. fix: prepend zcat.
-#   2. pixy 0.95.02 --interval_start default of 1 trips validation when the
-#      first vcf record is at pos > 1. fix: default to min(pos_array).
-#   3. vcfsim SimulatorClass.row_changes() slices a pandas Series with .values,
+#   1. vcfsim SimulatorClass.row_changes() slices a pandas Series with .values,
 #      read-only in newer numpy/pandas. fix: add .copy().
+#
+# two old_pixy patches were dropped when the legacy pin moved 0.93.1 -> 0.95.01:
+# gzipped-vcf chromosome detection (0.95.01 selects gunzip -c via cat_prog) and
+# the --interval_start default (0.95.01 already defaults to min(pos_array)).
+# Both were fixed upstream between the two releases.
 
 apply_patch() {
     # apply_patch <env> <path-glob-under-env-prefix> <label> <old> <new>
@@ -172,20 +173,6 @@ PATCH_PY
 }
 
 echo "[00_create_envs] Applying upstream-source patches..."
-
-apply_patch old_pixy "lib/python*/site-packages/pixy/__main__.py" \
-    "pixy 0.95.02 chromosome detection (zcat)" \
-    "grep -v '#' \" + args.vcf + \" | awk '{print \$1}' | uniq" \
-    "zcat \" + args.vcf + \" | grep -v '#' | awk '{print \$1}' | uniq"
-
-apply_patch old_pixy "lib/python*/site-packages/pixy/__main__.py" \
-    "pixy 0.95.02 interval_start default" \
-    "        if (args.interval_start is None):
-                interval_start = 1
-        else:" \
-    "        if (args.interval_start is None):
-                interval_start = min(pos_array)
-        else:"
 
 apply_patch vcfsim "lib/python*/site-packages/vcfsim/SimulatorClass.py" \
     "vcfsim read-only .values slice" \

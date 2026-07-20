@@ -56,14 +56,14 @@ emit_rows() {
 for f in "${files[@]}"; do
   base=$(basename "${f}" .tsv)
   case "${base}" in
-    # 0.93.1 single core (cores col already "0.93.1" in tsv)
-    pixy_old_pi_10Mb)  emit_rows "${f}" "0.93.1" pi  "0.93.1" ;;
-    pixy_old_dxy_10Mb) emit_rows "${f}" "0.93.1" dxy "0.93.1" ;;
-    pixy_old_fst_10Mb) emit_rows "${f}" "0.93.1" fst "0.93.1" ;;
-    # 2.1.2 any core count (labels itself "2.0.0" internally; tag is 2.1.2)
-    pixy_new_pi_10Mb_cores_*)  c="${base##*_}"; emit_rows "${f}" "2.1.2" pi  "${c}" ;;
-    pixy_new_dxy_10Mb_cores_*) c="${base##*_}"; emit_rows "${f}" "2.1.2" dxy "${c}" ;;
-    pixy_new_fst_10Mb_cores_*) c="${base##*_}"; emit_rows "${f}" "2.1.2" fst "${c}" ;;
+    # 0.95.01 single core (cores col already "0.95.01" in tsv)
+    pixy_old_pi_10Mb)  emit_rows "${f}" "0.95.01" pi  "0.95.01" ;;
+    pixy_old_dxy_10Mb) emit_rows "${f}" "0.95.01" dxy "0.95.01" ;;
+    pixy_old_fst_10Mb) emit_rows "${f}" "0.95.01" fst "0.95.01" ;;
+    # 2.2.3 any core count
+    pixy_new_pi_10Mb_cores_*)  c="${base##*_}"; emit_rows "${f}" "2.2.3" pi  "${c}" ;;
+    pixy_new_dxy_10Mb_cores_*) c="${base##*_}"; emit_rows "${f}" "2.2.3" dxy "${c}" ;;
+    pixy_new_fst_10Mb_cores_*) c="${base##*_}"; emit_rows "${f}" "2.2.3" fst "${c}" ;;
     all_cells_long) ;;
     *) echo "WARN: unrecognized file ${base}" >&2 ;;
   esac

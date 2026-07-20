@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run pixy 2.0.0 on each 10 Mb vcf for one stat at one core count
+# run pixy 2.2.3 on each 10 Mb vcf for one stat at one core count
 # STAT, N_CORES, RUN_TAG passed via --export. one seed per array task
 # window 25 kb = chunk 25 kb: 10 Mb / 25 kb = 400 chunks -> 25 chunks/core at
 # 16 cores, near-linear scaling. prior benchmark used 100 kb (6 chunks/core), capping speedup

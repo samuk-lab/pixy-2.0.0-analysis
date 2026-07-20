@@ -1,10 +1,10 @@
 library(tidyverse)
 
 # plot the pixy multicore benchmark:
-#   0.93.1 single core (zarr, n_cores == "0.95.01") vs 2.0.0 at 1/2/4/8/16 cores (tabix)
+#   0.95.01 single core (zarr, n_cores == "0.95.01") vs 2.2.3 at 1/2/4/8/16 cores (tabix)
 # in:  ../data/results/all_cells_long.tsv (from 04_aggregate_summaries.sh)
 # out: figs/
-# 2.0.0 per-cell tsvs pack timing into Elapsed_s as "elapsed user sys rss";
+# 2.2.3 per-cell tsvs pack timing into Elapsed_s as "elapsed user sys rss";
 # elapsed_s and rss_kb parsed out below
 
 script_dir <- tryCatch(
@@ -25,20 +25,20 @@ dat <- read_tsv(here("../data/results/all_cells_long.tsv"),
 
 dat <- dat |>
   mutate(
-    # elapsed_s for 2.0.0 is "elapsed user sys rss"
+    # elapsed_s for 2.2.3 is "elapsed user sys rss"
     elapsed_s_clean = as.numeric(str_extract(elapsed_s, "^[0-9.]+")),
-    # rss = last token; 0.93.1 rss_kb already clean
+    # rss = last token; 0.95.01 rss_kb already clean
     rss_kb_clean = case_when(
-      pixy_version == "2.0.0" ~ as.numeric(str_extract(elapsed_s, "[0-9]+$")),
+      pixy_version == "2.2.3" ~ as.numeric(str_extract(elapsed_s, "[0-9]+$")),
       TRUE                    ~ as.numeric(rss_kb)
     ),
     seed         = as.integer(seed),
     n_cores_num  = suppressWarnings(as.integer(n_cores)),
-    pixy_version = factor(pixy_version, levels = c("0.93.1", "2.0.0")),
+    pixy_version = factor(pixy_version, levels = c("0.95.01", "2.2.3")),
     arm_label = case_when(
-      pixy_version == "0.93.1"              ~ "0.93.1\n(1 core)",
-      n_cores_num == 1                       ~ "2.0.0\n(1 core)",
-      TRUE                                   ~ paste0("2.0.0\n(", n_cores_num, " cores)")
+      pixy_version == "0.95.01"              ~ "0.95.01\n(1 core)",
+      n_cores_num == 1                       ~ "2.2.3\n(1 core)",
+      TRUE                                   ~ paste0("2.2.3\n(", n_cores_num, " cores)")
     ),
     arm_label = fct_reorder(arm_label, ifelse(is.na(n_cores_num), -1L, n_cores_num))
   )
@@ -62,15 +62,15 @@ summary_tab <- ok |>
 print(summary_tab, n = Inf)
 
 ##########
-# speedup vs 2.0.0 at 1 core
+# speedup vs 2.2.3 at 1 core
 ##########
 baseline_1core <- ok |>
-  filter(pixy_version == "2.0.0", n_cores == "1") |>
+  filter(pixy_version == "2.2.3", n_cores == "1") |>
   group_by(statistic) |>
   summarise(baseline_s = median(elapsed_s_clean), .groups = "drop")
 
 speedup <- summary_tab |>
-  filter(pixy_version == "2.0.0") |>
+  filter(pixy_version == "2.2.3") |>
   left_join(baseline_1core, by = "statistic") |>
   mutate(
     n_cores_num = as.integer(n_cores),
@@ -85,8 +85,8 @@ p1 <- ok |>
   geom_boxplot(outlier.size = 0.4, linewidth = 0.4) +
   facet_wrap(~statistic, scales = "free_y", ncol = 3) +
   scale_fill_manual(
-    values = c("0.93.1" = "#d95f02", "2.0.0" = "#1b9e77"),
-    labels = c("0.93.1" = "pixy 0.93.1", "2.0.0" = "pixy 2.0.0")
+    values = c("0.95.01" = "#d95f02", "2.2.3" = "#1b9e77"),
+    labels = c("0.95.01" = "pixy 0.95.01", "2.2.3" = "pixy 2.2.3")
   ) +
   labs(
     title = "pixy benchmark: 10 Mb VCF, 25 kb windows, 100 replicates",
@@ -101,7 +101,7 @@ ggsave(file.path(fig_dir, "fig1_runtime_by_arm.pdf"), p1, width = 10, height = 5
 message("Saved fig1_runtime_by_arm.pdf")
 
 ##########
-# fig 2: multicore speedup (2.0.0 only)
+# fig 2: multicore speedup (2.2.3 only)
 ##########
 p2 <- speedup |>
   ggplot(aes(x = n_cores_num, y = speedup, colour = statistic, group = statistic)) +
@@ -112,7 +112,7 @@ p2 <- speedup |>
   scale_y_continuous(breaks = c(1, 2, 4, 8, 16)) +
   scale_colour_brewer(palette = "Dark2") +
   labs(
-    title    = "pixy 2.0.0 multicore speedup",
+    title    = "pixy 2.2.3 multicore speedup",
     subtitle = "Relative to 1-core median; dashed line = ideal linear scaling",
     x        = "Cores",
     y        = "Speedup (×)",
@@ -127,12 +127,12 @@ message("Saved fig2_speedup_curve.pdf")
 # fig 3: speedup vs old pixy baseline
 ##########
 old_baseline <- ok |>
-  filter(pixy_version == "0.93.1") |>
+  filter(pixy_version == "0.95.01") |>
   group_by(statistic) |>
   summarise(old_median_s = median(elapsed_s_clean), .groups = "drop")
 
 speedup_vs_old <- summary_tab |>
-  filter(pixy_version == "2.0.0") |>
+  filter(pixy_version == "2.2.3") |>
   left_join(old_baseline, by = "statistic") |>
   mutate(
     n_cores_num = as.integer(n_cores),
@@ -147,10 +147,10 @@ p3 <- speedup_vs_old |>
   scale_x_continuous(breaks = c(1, 2, 4, 8, 16)) +
   scale_colour_brewer(palette = "Dark2") +
   labs(
-    title    = "pixy 2.0.0 speedup vs. pixy 0.93.1",
+    title    = "pixy 2.2.3 speedup vs. pixy 0.95.01",
     subtitle = "Dashed line = parity with old single-core pixy",
-    x        = "pixy 2.0.0 cores",
-    y        = "Speedup over pixy 0.93.1 (×)",
+    x        = "pixy 2.2.3 cores",
+    y        = "Speedup over pixy 0.95.01 (×)",
     colour   = "Statistic"
   ) +
   theme_bw(base_size = 11)
@@ -168,8 +168,8 @@ p4 <- ok |>
   geom_boxplot(outlier.size = 0.4, linewidth = 0.4) +
   facet_wrap(~statistic, ncol = 3) +
   scale_fill_manual(
-    values = c("0.93.1" = "#d95f02", "2.0.0" = "#1b9e77"),
-    labels = c("0.93.1" = "pixy 0.93.1", "2.0.0" = "pixy 2.0.0")
+    values = c("0.95.01" = "#d95f02", "2.2.3" = "#1b9e77"),
+    labels = c("0.95.01" = "pixy 0.95.01", "2.2.3" = "pixy 2.2.3")
   ) +
   labs(
     title = "Peak resident memory by arm",

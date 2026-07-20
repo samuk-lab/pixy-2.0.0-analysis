@@ -76,8 +76,10 @@ fig <- ggplot(wide, aes(old, new)) +
   facet_grid2(stat ~ miss, scales = "free", independent = "x",
               labeller = labeller(stat = as_labeller(stat_label, label_parsed))) +
   facetted_pos_scales(x = rep(x_scales, each = nlevels(wide$miss))) +
-  labs(x = "pixy 0.95.02 (per-VCF estimate)",
-       y = "pixy 2.0.0 (per-VCF estimate)") +
+  # 0.95.01 is the legacy comparator actually installed; it is code-identical to
+  # the 0.95.02 of Korunes & Samuk 2021 (that diff touches only README and docs).
+  labs(x = "pixy 0.95.01 estimate",
+       y = "pixy 2.2.3 estimate") +
   theme_pixy() +
   theme(aspect.ratio = 1,
         strip.text.x = element_text(face = "plain"))

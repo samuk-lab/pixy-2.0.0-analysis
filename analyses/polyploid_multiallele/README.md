@@ -43,7 +43,7 @@ scripts run natively.
 ## Notes
 
 Old pixy runs with `--fst_maf_filter 0` (see `02_run_arm.sh`) so its Weir–Cockerham
-F<sub>ST</sub> is comparable to new pixy; the 0.95.02 default of 0.05 biases it upward
+F<sub>ST</sub> is comparable to new pixy; the 0.95.01 default of 0.05 biases it upward
 otherwise. The FST rerun produced the genuine multiallelic Hudson-F<sub>ST</sub>
 columns in Figure 4; the finite-sites E[F<sub>ST</sub>] derivation is in
 `analysis/finite_sites_fst_derivation.md`.

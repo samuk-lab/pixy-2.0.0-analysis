@@ -7,4 +7,4 @@ dependencies:
   - bioconda::htslib
   - bioconda::samtools=1.21
   - python=3.13
-  - conda-forge::pixy=2.2.2
+  - conda-forge::pixy=2.2.3

@@ -5,7 +5,11 @@ channels:
   - nodefaults
 dependencies:
   - python>=3.8,<3.11
-  - conda-forge::pixy=0.93.1
+  # 0.95.01 is the legacy release used as the cross-version baseline. It is
+  # code-identical to 0.95.02 (the version of Korunes & Samuk 2021): the
+  # 0.95.01..0.95.02 diff touches only README.md and docs/*.rst. 0.95.02 itself
+  # was never published to conda-forge. NOTE: this build self-reports "0.95.0".
+  - conda-forge::pixy=0.95.01
   - bioconda::htslib
   - bioconda::samtools=1.21
   - numpy<2

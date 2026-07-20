@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=run_pixy
-#SBATCH --partition=intel
+#SBATCH --partition=short
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=16G
-#SBATCH --time=04:00:00
+#SBATCH --time=01:45:00
 #SBATCH --array=1-4
 #SBATCH --output=logs/run_pixy_%A_%a.out
 #SBATCH --error=logs/run_pixy_%A_%a.err

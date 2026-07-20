@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# submit pixy 2.2.3 array jobs across all (stat x cores) combos
-# called standalone or from 03b_submit_pixy_new_fst_only.sh
+# submit the aggregate (process-tree) memory arrays across all (stat x cores) combos
+# 10 seeds per cell is enough: peak memory varies far less across seeds than wall time
 # progress -> stderr; one job id per line -> stdout for dep chaining
 # vars: DEP, STATS, CORES, ARRAY_SPEC
 
@@ -10,13 +10,13 @@ PROJECT_DIR="${PROJECT_DIR:-${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")" && pwd)}}
 LOG_DIR="${PROJECT_DIR}/logs"
 
 STATS="${STATS:-pi dxy fst}"
-CORES="${CORES:-1 2 4 8 16}"
-ARRAY_SPEC="${ARRAY_SPEC:-1-100%25}"
+CORES="${CORES:-1 4 16}"
+ARRAY_SPEC="${ARRAY_SPEC:-1-10}"
 DEP="${DEP:-}"
 
 mkdir -p "${LOG_DIR}"
 
-script="${PROJECT_DIR}/03_pixy_new_array.sbatch"
+script="${PROJECT_DIR}/05_memory_aggregate.sbatch"
 [[ -f "${script}" ]] || { echo "Missing ${script}" >&2; exit 1; }
 
 for ncores in ${CORES}; do
@@ -25,7 +25,6 @@ for ncores in ${CORES}; do
     dep_args=()
     [[ -n "${DEP}" ]] && dep_args=(--dependency="${DEP}")
 
-    # mem ceilings, not measured; re-tune from seff. peak rss in all_cells_long.tsv
     case "${ncores}" in
       1|2)  mem_mb=8192  ;;   #  8G
       4|8)  mem_mb=12288 ;;   # 12G
@@ -35,14 +34,14 @@ for ncores in ${CORES}; do
     jid=$(sbatch \
       --array="${ARRAY_SPEC}" \
       --partition=short \
-      --job-name="pixy_new_${stat}_${run_tag}" \
+      --job-name="pixy_mem_${stat}_${run_tag}" \
       --cpus-per-task="${ncores}" \
       --mem="${mem_mb}M" \
       "${dep_args[@]+"${dep_args[@]}"}" \
       --export=ALL,PROJECT_DIR="${PROJECT_DIR}",STAT="${stat}",N_CORES="${ncores}",RUN_TAG="${run_tag}" \
       "${script}" | awk '{print $NF}')
 
-    echo "  [submit] pixy_new ${stat} cores=${ncores} → job ${jid}" >&2
+    echo "  [submit] pixy_mem ${stat} cores=${ncores} → job ${jid}" >&2
     echo "${jid}"   # stdout: one job id per line
   done
 done

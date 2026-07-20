@@ -12,7 +12,7 @@
 #   1. simulate a vcf (single-chrom or per-chromosome mixed-ploidy)
 #   2. bgzip + tabix
 #   3. run pixy 2.0 (new + new_multi), all declared stats in one call
-#   4. run pixy 0.95.02 if comparators has old_pixy (pi/dxy only; old pixy has
+#   4. run pixy 0.95.01 if comparators has old_pixy (pi/dxy only; old pixy has
 #      no fst-alone, watterson_theta, or tajima_d)
 #   5. run vcftools if comparators has vcftools (windowed pi for 1-pop,
 #      windowed Weir FST for 2-pop)
@@ -499,7 +499,7 @@ run_one_replicate() {
     run_pixy_new new_multi
     (( RUN_FST_BIALLELIC )) && run_pixy_fst_biallelic
 
-    # pixy 0.95.02 (old) — only for diploid arms with pi or dxy.
+    # pixy 0.95.01 (old) — only for diploid arms with pi or dxy.
     # old pixy defaults --fst_maf_filter to 0.05, dropping MAF<=5% snps before
     # WC-FST and biasing it upward (~+0.02). force 0 so old WC-FST uses the same
     # site set as new pixy / vcftools (FigS2 agreement).

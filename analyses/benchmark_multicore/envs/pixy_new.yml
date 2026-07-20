@@ -4,10 +4,10 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  # pixy 2.2.2: streaming FST + faster tabix contig-end check (reduces peak RSS).
+  # pixy 2.2.3: streaming FST + faster tabix contig-end check (reduces peak RSS).
   # CLI flags (--n_cores, --chunk_size, --output_folder, --output_prefix) unchanged.
   - python>=3.10
-  - pixy=2.2.2
+  - pixy=2.2.3
   - htslib    # provides tabix, required for pixy 2.x VCF random access
   - samtools
   - bcftools

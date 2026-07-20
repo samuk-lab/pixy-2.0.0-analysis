@@ -1,11 +1,17 @@
 name: old_pixy
+# NOTE: polyploid_multiallele/envs/old_pixy.yml declares the same env name with a
+# stricter dependency set (python<3.11, numpy<2, samtools=1.21). Both pin
+# pixy=0.95.01, so either satisfies this module; build the polyploid one to get a
+# single env that works for both.
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
   # pixy 0.95.01: most recent legacy zarr-backed single-core pixy on conda-forge.
-  # (0.95.02 does not exist on conda-forge; 0.95.01 is the correct latest.)
+  # (0.95.02 exists only as a git tag, never released to conda-forge.)
+  # NOTE: this build self-reports "version 0.95.0" — the version string was
+  # hardcoded and stale. The installed conda package is 0.95.01.
   # conda-forge has channel priority over bioconda.
   # Uses --zarr_path for VCF ingestion; no --n_cores or --chunk_size.
   # Python version unpinned — 0.95.01 only has py36/py38 builds; let mamba resolve.
