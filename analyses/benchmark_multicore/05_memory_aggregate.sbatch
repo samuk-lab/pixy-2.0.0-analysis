@@ -47,13 +47,14 @@ if command -v conda >/dev/null 2>&1; then
   eval "$(conda shell.bash hook)"
   conda activate new_pixy
 fi
-command -v pixy   >/dev/null 2>&1 || { echo "pixy not on PATH" >&2; exit 1; }
-command -v setsid >/dev/null 2>&1 || { echo "setsid not on PATH" >&2; exit 1; }
-command -v flock  >/dev/null 2>&1 || { echo "flock not on PATH" >&2; exit 1; }
+command -v pixy    >/dev/null 2>&1 || { echo "pixy not on PATH" >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { echo "python3 not on PATH" >&2; exit 1; }
+command -v flock   >/dev/null 2>&1 || { echo "flock not on PATH" >&2; exit 1; }
+[[ -f "${PROJECT_DIR}/sample_tree_rss.py" ]] || { echo "missing sample_tree_rss.py" >&2; exit 1; }
 
 mkdir -p "${WORK_DIR}" "${LOG_DIR}" "$(dirname "${SUMMARY}")"
 flock -x "${LOCKFILE}" bash -c "
-  [[ -f '${SUMMARY}' ]] || printf 'Seed\tCores\tPixy_version\tTree_peak_kb\tProc_peak_kb\tN_proc_at_peak\tElapsed_s\tStatus\n' > '${SUMMARY}'
+  [[ -f '${SUMMARY}' ]] || printf 'Seed\tCores\tPixy_version\tTree_peak_kb\tProc_peak_kb\tN_proc_at_peak\tN_samples\tElapsed_s\tStatus\n' > '${SUMMARY}'
 "
 
 ##########
@@ -61,60 +62,63 @@ flock -x "${LOCKFILE}" bash -c "
 ##########
 seed="${SLURM_ARRAY_TASK_ID}"
 vcf="${VCF_DIR}/dm_sim_vcf_seed_${seed}.vcf.gz"
-pixy_version="$(pixy --version 2>&1 | tr -d '\n')"
+# `pixy --version` prints an ASCII banner; keep only the version number
+pixy_version="$(pixy --version 2>&1 | grep -oE '[0-9]+\.[0-9.]+' | tail -1)"
 
 if [[ ! -f "${vcf}" ]]; then
   flock -x "${LOCKFILE}" \
-    printf "%s\t%s\t%s\tNA\tNA\tNA\t0\tMISSING_VCF\n" "${seed}" "${N_CORES}" "${pixy_version}" >> "${SUMMARY}"
+    printf "%s\t%s\t%s\tNA\tNA\tNA\tNA\t0\tMISSING_VCF\n" "${seed}" "${N_CORES}" "${pixy_version}" >> "${SUMMARY}"
   exit 0
 fi
 
 prefix="pixy_mem_${STAT}_${seed}"
 out_file="${WORK_DIR}/${prefix}_${STAT}.txt"
 run_log="${WORK_DIR}/pixy_${seed}.log"
+sample_out="${WORK_DIR}/tree_rss_${seed}.txt"
 
-# own process group so the sampler can find every worker by pgid
+# sample the process TREE from /proc. an earlier version launched pixy under
+# setsid and filtered ps by pgid, but setsid forks, so $! was the wrapper's pid
+# and matched nothing -- every sample summed to zero (NO_SAMPLES).
 start_s=$(date +%s.%N)
-setsid pixy --stats "${STAT}" \
-            --vcf "${vcf}" \
-            --output_folder "${WORK_DIR}" \
-            --output_prefix "${prefix}" \
-            --populations "${POP_MAP}" \
-            --window_size "${WINDOW}" \
-            --chunk_size "${CHUNK}" \
-            --n_cores "${N_CORES}" \
-            > "${run_log}" 2>&1 &
+pixy --stats "${STAT}" \
+     --vcf "${vcf}" \
+     --output_folder "${WORK_DIR}" \
+     --output_prefix "${prefix}" \
+     --populations "${POP_MAP}" \
+     --window_size "${WINDOW}" \
+     --chunk_size "${CHUNK}" \
+     --n_cores "${N_CORES}" \
+     > "${run_log}" 2>&1 &
 pixy_pid=$!
-pgid="${pixy_pid}"
 
-tree_peak=0; proc_peak=0; n_at_peak=0
-while kill -0 "${pixy_pid}" 2>/dev/null; do
-  read -r sum maxrss n < <(
-    ps -eo pgid=,rss= 2>/dev/null |
-    awk -v g="${pgid}" '$1==g { s+=$2; if($2>m) m=$2; n++ } END { print s+0, m+0, n+0 }'
-  )
-  if (( sum > tree_peak )); then tree_peak=${sum}; n_at_peak=${n}; fi
-  if (( maxrss > proc_peak )); then proc_peak=${maxrss}; fi
-  sleep "${SAMPLE_INTERVAL}"
-done
+python3 "${PROJECT_DIR}/sample_tree_rss.py" \
+        "${pixy_pid}" "${SAMPLE_INTERVAL}" "${sample_out}" &
+sampler_pid=$!
 
 set +e
 wait "${pixy_pid}"
 rc=$?
 set -e
+wait "${sampler_pid}" 2>/dev/null || true
+
 elapsed_s=$(awk -v a="${start_s}" -v b="$(date +%s.%N)" 'BEGIN{printf "%.2f", b-a}')
+
+tree_peak=0; proc_peak=0; n_at_peak=0; n_samples=0
+if [[ -s "${sample_out}" ]]; then
+  IFS=$'\t' read -r tree_peak proc_peak n_at_peak n_samples < "${sample_out}"
+fi
 
 status="OK"
 if   [[ ${rc} -ne 0 ]];        then status="PIXY_FAIL_${rc}"
 elif [[ ! -s "${out_file}" ]]; then status="NO_OUTPUT"
-elif (( tree_peak == 0 ));     then status="NO_SAMPLES"
+elif (( n_samples == 0 ));     then status="NO_SAMPLES"
 fi
 
 flock -x "${LOCKFILE}" \
-  printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" \
+  printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" \
     "${seed}" "${N_CORES}" "${pixy_version}" \
-    "${tree_peak}" "${proc_peak}" "${n_at_peak}" "${elapsed_s}" "${status}" >> "${SUMMARY}"
+    "${tree_peak}" "${proc_peak}" "${n_at_peak}" "${n_samples}" "${elapsed_s}" "${status}" >> "${SUMMARY}"
 
-echo "Seed ${seed} | stat=${STAT} cores=${N_CORES} | tree_peak=${tree_peak}kB proc_peak=${proc_peak}kB (${n_at_peak} procs) | status=${status}"
+echo "Seed ${seed} | stat=${STAT} cores=${N_CORES} | tree_peak=${tree_peak}kB proc_peak=${proc_peak}kB (${n_at_peak} procs, ${n_samples} samples) | status=${status}"
 
-rm -f "${out_file}" "${run_log}"
+rm -f "${out_file}" "${run_log}" "${sample_out}"

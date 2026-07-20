@@ -8,3 +8,8 @@ dependencies:
   - bioconda::samtools=1.21
   - python=3.13
   - conda-forge::pixy=2.2.3
+  # scikit-allel pins an old dask that imports numpy.compat, removed in numpy 2.0.
+  # python=3.13 pulls numpy 2.x, so without this the env solves to dask 2023.3.0
+  # and every pixy call dies on import. pinned here rather than patched in after
+  # env creation, so the yml alone is sufficient to rebuild a working env.
+  - conda-forge::dask>=2024.1.0
