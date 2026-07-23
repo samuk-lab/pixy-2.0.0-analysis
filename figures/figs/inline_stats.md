@@ -57,7 +57,7 @@ Multiallelic-aware estimator recovers 100-100% of theory across ploidies.
 
 - **dxy, 2-pop diploid** (97560 windows): Pearson r = 1.000000000000 (1 - r = 0); mean|new-old| = 2.5e-16; max|new-old| = 5.1e-16
 
-- **WC-FST, 2-pop diploid (MAF-0 rerun; float math, not an integer ratio)** (97560 windows): Pearson r = 1.000000000000 (1 - r = 6.7e-16); mean|new-old| = 2.5e-15; max|new-old| = 5.1e-15
+- **WC-FST, 2-pop diploid (MAF-0 rerun; float math, not an integer ratio)** (97560 windows): Pearson r = 1.000000000000 (1 - r = 1.1e-16); mean|new-old| = 2.5e-15; max|new-old| = 5.1e-15
 
 
 For pi and dxy, agreement is at serialization round-trip precision
@@ -224,10 +224,10 @@ Each estimator against its own expectation, over 10 ploidy x theta cells each.
  the across-replicate 95% interval contains E[FST] in 10 / 10 cells.
 
 
-Cross-estimand contrasts (the 'inverted' framing in Results/Discussion): the biallelic
- estimator vs the FINITE-sites E, and the multiallelic-aware estimator vs the flat
- infinite-sites E[FST] = 0.237. Finite-sites E[FST] declines from 0.2368 (theta = 0.005)
- to 0.2331 (theta = 0.100), a -1.6% drop.
+Cross-estimand contrasts (the 'inverted' framing in Results/Discussion): the
+ biallelic estimator vs the FINITE-sites E, and the multiallelic-aware estimator vs
+ the flat infinite-sites E[FST] = 0.237. Finite-sites E[FST] declines from 0.2368
+ (theta = 0.005) to 0.2331 (theta = 0.100), a -1.6% drop.
 
 
 | ploidy | theta | biallelic vs finite | multiallelic-aware vs infinite |
@@ -253,6 +253,7 @@ Cross-estimand contrasts (the 'inverted' framing in Results/Discussion): the bia
 | octoploid | 0.050 | +0.64% | -0.82% |
 
 | octoploid | 0.100 | +1.30% | -1.64% |
+
 
 
 The biallelic estimator's residual is the expected one: the filter removes
@@ -338,12 +339,14 @@ Peak RSS pooled across pi/dxy/fst (10 Mb VCF, 10 diploid samples, 25 kb windows)
 | 16 | 1861 | 105 |
 
 
+
 - legacy 0.95.01 single-core peak RSS: 1138 MB (single process).
 
-- per-worker footprint flat at ~105 MB across 2-16 cores, vs 1138 MB for the legacy single process: ~10.8x reduction in per-worker memory.
+- per-worker footprint flat at ~105 MB across 2-16 cores, vs 1138 MB for the
+ legacy single process: ~10.8x reduction in per-worker memory.
 
-- whole-tree footprint grows ~113 MB per added core (OLS slope over cores 1/2/4/8/16); it stays below the legacy single-core 1138 MB up to ~9 cores, above it beyond.
-
+- whole-tree footprint grows ~113 MB per added core (OLS slope over cores 1/2/4/8/16);
+ it stays below the legacy single-core 1138 MB up to ~9 cores, above it beyond.
 
 
 
