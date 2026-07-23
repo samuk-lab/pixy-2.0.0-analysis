@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # submit the aggregate (process-tree) memory arrays across all (stat x cores) combos
-# 10 seeds per cell is enough: peak memory varies far less across seeds than wall time
+# 20 seeds per cell: peak memory varies less across seeds than wall time, but the
+# 1-core pi/dxy cells are bimodal (~118 vs ~230 MB), so 10 is too few to summarise them
 # progress -> stderr; one job id per line -> stdout for dep chaining
 # vars: DEP, STATS, CORES, ARRAY_SPEC
 
@@ -10,8 +11,8 @@ PROJECT_DIR="${PROJECT_DIR:-${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")" && pwd)}}
 LOG_DIR="${PROJECT_DIR}/logs"
 
 STATS="${STATS:-pi dxy fst}"
-CORES="${CORES:-1 4 16}"
-ARRAY_SPEC="${ARRAY_SPEC:-1-10}"
+CORES="${CORES:-1 2 4 8 16}"
+ARRAY_SPEC="${ARRAY_SPEC:-1-20}"
 DEP="${DEP:-}"
 
 mkdir -p "${LOG_DIR}"
@@ -33,7 +34,7 @@ for ncores in ${CORES}; do
 
     jid=$(sbatch \
       --array="${ARRAY_SPEC}" \
-      --partition=short \
+      --partition=intel \
       --job-name="pixy_mem_${stat}_${run_tag}" \
       --cpus-per-task="${ncores}" \
       --mem="${mem_mb}M" \

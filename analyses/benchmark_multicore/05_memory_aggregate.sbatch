@@ -10,6 +10,7 @@
 #SBATCH --error=logs/pixy_mem_%x_%A_%a.err
 #SBATCH --ntasks=1
 #SBATCH --mem=8G
+#SBATCH --partition=intel
 #SBATCH --time=0-00:30:00
 #SBATCH --array=1-10
 

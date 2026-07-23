@@ -11,3 +11,9 @@ dependencies:
   - htslib    # provides tabix, required for pixy 2.x VCF random access
   - samtools
   - bcftools
+  # scikit-allel (pulled in by pixy) pins an old dask that imports numpy.compat,
+  # removed in numpy 2.0; python>=3.10 solves to numpy 2.x, so without this the env
+  # builds a dask that dies at pixy import. Pinned directly (as in the polyploid
+  # pixy.yml) so the yml alone rebuilds a working env — otherwise the fix lives only
+  # as a post-build patch (see the fix_dask one-off run on the cluster).
+  - conda-forge::dask>=2024.1.0

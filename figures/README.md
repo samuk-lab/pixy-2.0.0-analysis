@@ -11,7 +11,7 @@ and sources `figure_theme.R` for the shared theme and palettes.
 | Script | Output | Reads |
 |--------|--------|-------|
 | `Figure_1_pixy_overview.sh` | `figs/Figure1_pixy_overview.pdf` | hand-built SVG, no data |
-| `Figure_2_Performance.R` | `figs/Figure2_performance.pdf` | `../analyses/benchmark_multicore/data/results/all_cells_long.tsv` |
+| `Figure_2_Performance.R` | `figs/Figure2_performance.pdf` | `../analyses/benchmark_multicore/data/results/all_cells_long.tsv` (panel a), `.../pixy_mem_*.tsv` (panel b) |
 | `Figure_3_Polyploid.R` | `figs/Figure3_polyploid.pdf` | `../analyses/polyploid_multiallele/analysis/{missingness_summary,thetaw_tajimaD_summary,per_rep_*}.tsv` |
 | `Figure_4_Multiallelic.R` | `figs/Figure4_multiallelic.pdf` | `../analyses/polyploid_multiallele/analysis/{multiallelic_frac_summary,dxy_fst_theta_summary}.tsv` |
 | `Figure_5_Empirical.R` | `figs/Figure5_empirical.pdf` | `../analyses/empirical-tests/data/aggregated/{anopheles,arenosa}.joined.tsv`, `config/arms.tsv` |

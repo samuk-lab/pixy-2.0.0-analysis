@@ -99,7 +99,7 @@ its output `figures/figs/inline_stats.md` is provided precomputed.
 The `analyses/` pipelines were written for the UCR HPCC (SLURM + conda), and their
 `.sbatch` scripts carry absolute cluster paths, so they document the analysis rather
 than run turnkey elsewhere. Large intermediate data are not included, since they are
-bulky and regeneratable: the simulated VCFs, the 87 aggregated per-arm TSVs (~380 MB)
+bulky and regeneratable: the simulated VCFs, the 88 aggregated per-arm TSVs (~380 MB)
 that `Inline_statistical_tests.R` reads, and the per-replicate cells under
 `tajima_multiallelic_variance/data/` (~4 GB). Run the matching pipeline to rebuild them.
 

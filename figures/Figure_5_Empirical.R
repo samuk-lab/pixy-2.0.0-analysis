@@ -204,4 +204,4 @@ fig <- p_a
 
 fig
 
-pixy_save(fig, fig_path, width = 11, height = 8)
+pixy_save(fig, fig_path, width = 11, height = 9.5)

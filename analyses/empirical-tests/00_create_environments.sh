@@ -28,6 +28,10 @@ submit_env() {
     --error="${LOG_DIR}/env_${name}_%j.err" \
     --wrap="set -eo pipefail
             set +u; source ~/.bashrc; set -u
+            # clear the cached conda-forge index first: a stale index predating a
+            # freshly published pin can make the solve fail *after* the old env was
+            # already removed, destroying it (see RERUN_HANDOFF run log).
+            mamba clean --index-cache -y 2>/dev/null || true
             mamba env remove -n '${name}' -y 2>/dev/null || true
             mamba env create -f '${yml}' -n '${name}'
             # pixy env: bump dask for numpy 2.x (scikit-allel pins old dask)

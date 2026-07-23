@@ -34,7 +34,7 @@ for ncores in ${CORES}; do
 
     jid=$(sbatch \
       --array="${ARRAY_SPEC}" \
-      --partition=short \
+      --partition=intel \
       --job-name="pixy_new_${stat}_${run_tag}" \
       --cpus-per-task="${ncores}" \
       --mem="${mem_mb}M" \

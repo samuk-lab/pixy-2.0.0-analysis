@@ -566,15 +566,46 @@ empirical <- function(file, arm) {
             dd$n_multi[is.na(dd$n_multi)] <- 0
             dens <- (100 * dd$n_multi / nsites)[ok]
         }
-        emit("\n- pi[%s]: paired mean uplift = %.5f [%.5f, %.5f], p = %s; relative uplift = %s [%s, %s]",
+        emit("\n- pi[%s]: paired mean uplift = %.5f [%.5f, %.5f], p = %s; relative uplift = %s [%s, %s] (SD %.1f%%, n = %d)",
              p, t$estimate, t$conf.int[1], t$conf.int[2],
-             format.pval(t$p.value, digits = 2), pct(cu$mean), pct(cu$lo), pct(cu$hi))
+             format.pval(t$p.value, digits = 2), pct(cu$mean), pct(cu$lo), pct(cu$hi),
+             100 * sd(rel), length(rel))
         if (!is.null(dens) && sd(dens, na.rm = TRUE) > 0) {
             keep <- is.finite(upl) & is.finite(dens)
             sp <- suppressWarnings(cor.test(upl[keep], dens[keep], method = "spearman"))
             emit("; abs-uplift~%%-multiallelic Spearman rho = %.2f, p = %s",
                  unname(sp$estimate), format.pval(sp$p.value, digits = 2))
         }
+    }
+
+    # dxy: same paired per-window uplift as pi, one value per arm (not per pop)
+    bi <- d$dxy_biallelic; mu_ <- d$dxy_multi
+    ok <- is.finite(bi) & is.finite(mu_) & bi > 0
+    rel <- (mu_[ok] - bi[ok]) / bi[ok]
+    emit("\n- dxy: relative uplift = %s (SD %.1f%%, n = %d)",
+         pct(mean(rel)), 100 * sd(rel), length(rel))
+
+    # FST: report agreement, not uplift. FST is a ratio that sits near zero in many
+    # windows, so a relative uplift is unstable and uninformative; and the signed mean
+    # cancels (it ran ~68x below the mean absolute difference in the diploid arm), so
+    # "effectively identical" can be an artifact of sign cancellation rather than
+    # agreement. mean |difference| is the honest summary. R^2 here is the same quantity
+    # printed in the Figure 5 FST panels, so text and figure cannot drift apart.
+    bi <- d$fst_biallelic; mu_ <- d$fst_multi
+    ok <- is.finite(bi) & is.finite(mu_)
+    x <- bi[ok]; y <- mu_[ok]; dif <- y - x
+    r <- cor(x, y)
+    emit("\n- FST: n = %d windows; mean diff = %+.2e (SD %.2e); mean |diff| = %.2e; max |diff| = %.2e; r = %.6f; R^2 = %.4f; identical in %.1f%% of windows",
+         length(x), mean(dif), sd(dif), mean(abs(dif)), max(abs(dif)), r, r^2,
+         100 * mean(abs(dif) < 1e-12))
+
+    # multiallelic SNPs the FST path gains in multi mode -- the mechanism behind the
+    # diploid/tetraploid split above (pixy < 2.2.3 re-filtered FST to biallelic, so
+    # this was 0 by construction; see RERUN_HANDOFF.md)
+    if (all(c("n_snps_fst_biallelic", "n_snps_fst_multi") %in% names(d))) {
+        extra <- d$n_snps_fst_multi - d$n_snps_fst_biallelic
+        extra <- extra[is.finite(extra)]
+        emit("; +%.1f multiallelic SNPs per window in FST", mean(extra))
     }
     emit("\n")
 }

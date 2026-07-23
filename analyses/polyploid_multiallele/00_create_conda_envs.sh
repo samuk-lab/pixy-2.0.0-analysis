@@ -50,6 +50,12 @@ fi
 # enable conda activate / env list / run inside scripts
 eval "$(conda shell.bash hook)"
 
+# clear the cached package index up front: a stale index predating a freshly
+# published pin can make a solve fail *after* the old env was removed (--force),
+# which once destroyed several envs during the 2.2.3 rerun. a clean index also
+# makes a from-scratch build reproduce the pinned versions in envs/*.yml.
+conda clean --index-cache -y >/dev/null 2>&1 || true
+
 env_exists() {
     conda env list | awk 'NF && $1 !~ /^#/ {print $1}' | grep -qxF "$1"
 }

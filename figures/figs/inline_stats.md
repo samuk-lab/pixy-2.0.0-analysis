@@ -57,7 +57,7 @@ Multiallelic-aware estimator recovers 100-100% of theory across ploidies.
 
 - **dxy, 2-pop diploid** (97560 windows): Pearson r = 1.000000000000 (1 - r = 0); mean|new-old| = 2.5e-16; max|new-old| = 5.1e-16
 
-- **WC-FST, 2-pop diploid (MAF-0 rerun; float math, not an integer ratio)** (97560 windows): Pearson r = 1.000000000000 (1 - r = 1.1e-16); mean|new-old| = 2.5e-15; max|new-old| = 5.1e-15
+- **WC-FST, 2-pop diploid (MAF-0 rerun; float math, not an integer ratio)** (97560 windows): Pearson r = 1.000000000000 (1 - r = 6.7e-16); mean|new-old| = 2.5e-15; max|new-old| = 5.1e-15
 
 
 For pi and dxy, agreement is at serialization round-trip precision
@@ -121,7 +121,7 @@ Multiallelic-aware estimator (the one plotted in Figure 3) for pi, dxy, theta_W
 
 | dxy | 72000 | -4.12e-07 | -0.001% | 4.5e-06 | 0.05% of E |
 
-| Hudson FST | 72000 | -1.20e-04 | -0.051% | 3.0e-05 | 0.15% of E |
+| Hudson FST | 72000 | -1.37e-03 | -0.577% | 2.9e-05 | 0.65% of E |
 
 | theta_W | 72000 | -3.07e-06 | -0.008% | 2.6e-06 | 0.07% of E |
 
@@ -130,7 +130,7 @@ Multiallelic-aware estimator (the one plotted in Figure 3) for pi, dxy, theta_W
 
 Interpretation (bias magnitude, per Morris et al. 2019):
 
-- pi, dxy, theta_W, and Hudson FST are unbiased to within 0.15% of the expected value in every ploidy x missingness cell (pooled relative bias: pi -0.013%, dxy -0.001%, Hudson FST -0.051%, theta_W -0.008%).
+- pi, dxy, theta_W, and Hudson FST are unbiased to within 0.65% of the expected value in every ploidy x missingness cell (pooled relative bias: pi -0.013%, dxy -0.001%, Hudson FST -0.577%, theta_W -0.008%).
 
 - Tajima's D: pooled bias -0.0002 (-0.018% under the +1 shift), worst-cell |bias| 0.0028 (absolute) against its simulated neutral reference; the per-window SD of D is ~1.6, so this is negligible.
 
@@ -148,22 +148,22 @@ Interpretation (bias magnitude, per Morris et al. 2019):
 
 |---|---|---|---|---|
 
-| statistic | 4 | 2.71 | 0.028 | 0.00% |
+| statistic | 4 | 475.62 | <2e-16 | 0.53% |
 
-| ploidy | 3 | 15.71 | 3.3e-10 | 0.01% |
+| ploidy | 3 | 11.37 | 1.9e-07 | 0.01% |
 
-| missingness | 4 | 0.65 | 0.62 | 0.00% |
+| missingness | 4 | 0.97 | 0.42 | 0.00% |
 
-| statistic x ploidy | 12 | 2.22 | 0.0088 | 0.01% |
+| statistic x ploidy | 12 | 2.52 | 0.0026 | 0.01% |
 
-| statistic x missingness | 16 | 0.81 | 0.67 | 0.00% |
+| statistic x missingness | 16 | 0.63 | 0.86 | 0.00% |
 
-| ploidy x missingness | 12 | 1.74 | 0.052 | 0.01% |
+| ploidy x missingness | 12 | 1.62 | 0.077 | 0.01% |
 
 | statistic x ploidy x missingness | 48 | 0.21 | 1 | 0.00% |
 
 
-Every term is a fraction of a percent in effect size. Missingness (main effect + all interactions involving it) explains 0.01% of the total variance in deviation-from-theory and is non-significant; the residual (replicate sampling noise) is 100.0%. Ploidy and statistic are significant but explain a negligible share of the variance: no cell mean departs from its expectation by more than 0.15%. (All five statistics share the same n, so significance here tracks effect size, not replicate count.)
+Every term is a fraction of a percent in effect size. Missingness (main effect + all interactions involving it) explains 0.01% of the total variance in deviation-from-theory and is non-significant; the residual (replicate sampling noise) is 99.4%. Ploidy and statistic are significant but explain a negligible share of the variance: no cell mean departs from its expectation by more than 0.65%. (All five statistics share the same n, so significance here tracks effect size, not replicate count.)
 
 
 Footnote on the `statistic` factor: it mixes four multiallelic-aware statistics (pi, dxy, theta_W, Tajima's D) with one biallelic one (Hudson FST -- see above). Each is compared against its own correct expectation, so the deviations are individually interpretable, but the significant `statistic` term is not an estimator comparison and must not be read as one.
@@ -244,26 +244,26 @@ Power-law fit log(speedup) ~ log(cores) on cores >= 2 (exponent b; speedup = a*c
 
 |---|---|---|
 
-| dxy | 1.14 [0.70, 1.57] | 10.6x |
+| dxy | 1.11 [0.61, 1.60] | 10.0x |
 
-| fst | 0.78 [0.39, 1.18] | 5.4x |
+| fst | 0.71 [-0.02, 1.43] | 4.3x |
 
-| pi | 1.13 [0.66, 1.60] | 10.6x |
+| pi | 1.10 [0.60, 1.60] | 9.9x |
 
 
 
-Speedup vs the legacy single-core release (recorded as `0.93.1`), ratio of medians:
+Speedup vs the legacy single-core release (recorded as `0.95.01`), ratio of medians:
 
 
 | statistic | legacy median (s) | 2.x 1 core | 2.x 16 cores |
 
 |---|---|---|---|
 
-| dxy | 366.5 | 1.46x | 15.5x |
+| dxy | 392.2 | 1.64x | 16.4x |
 
-| fst | 82.6 | 1.21x | 6.5x |
+| fst | 55.8 | 1.01x | 4.3x |
 
-| pi | 261.7 | 1.03x | 11.0x |
+| pi | 250.6 | 1.05x | 10.4x |
 
 
 
@@ -274,22 +274,32 @@ Speedup vs the legacy single-core release (recorded as `0.93.1`), ratio of media
 **Anopheles gambiae (2n, chr 3R)** (populations: BFS, KES; 5320 windows):
 
 
-- pi[BFS]: paired mean uplift = 0.00110 [0.00108, 0.00113], p = <2e-16; relative uplift = +8.23% [+8.11%, +8.36%]
+- pi[BFS]: paired mean uplift = 0.00110 [0.00108, 0.00113], p = <2e-16; relative uplift = +8.23% [+8.11%, +8.36%] (SD 4.8%, n = 5280)
 ; abs-uplift~%-multiallelic Spearman rho = 0.95, p = <2e-16
 
-- pi[KES]: paired mean uplift = 0.00101 [0.00098, 0.00104], p = <2e-16; relative uplift = +8.01% [+7.89%, +8.14%]
+- pi[KES]: paired mean uplift = 0.00101 [0.00098, 0.00104], p = <2e-16; relative uplift = +8.01% [+7.89%, +8.14%] (SD 4.7%, n = 5279)
 ; abs-uplift~%-multiallelic Spearman rho = 0.94, p = <2e-16
+
+- dxy: relative uplift = +8.01% (SD 4.5%, n = 5283)
+
+- FST: n = 5283 windows; mean diff = +2.68e-06 (SD 5.86e-04); mean |diff| = 1.82e-04; max |diff| = 1.07e-02; r = 0.999985; R^2 = 1.0000; identical in 67.0% of windows
+; +0.5 multiallelic SNPs per window in FST
 
 
 
 **Arabidopsis arenosa (4n, LR999451.1)** (populations: SPI, TRE; 2523 windows):
 
 
-- pi[SPI]: paired mean uplift = 0.00115 [0.00111, 0.00119], p = <2e-16; relative uplift = +9.08% [+8.75%, +9.41%]
+- pi[SPI]: paired mean uplift = 0.00115 [0.00111, 0.00119], p = <2e-16; relative uplift = +9.08% [+8.75%, +9.41%] (SD 8.3%, n = 2366)
 ; abs-uplift~%-multiallelic Spearman rho = 0.88, p = <2e-16
 
-- pi[TRE]: paired mean uplift = 0.00124 [0.00119, 0.00129], p = <2e-16; relative uplift = +9.40% [+8.77%, +10.02%]
+- pi[TRE]: paired mean uplift = 0.00124 [0.00119, 0.00129], p = <2e-16; relative uplift = +9.40% [+8.77%, +10.02%] (SD 15.6%, n = 2373)
 ; abs-uplift~%-multiallelic Spearman rho = 0.90, p = <2e-16
+
+- dxy: relative uplift = +9.46% (SD 26.1%, n = 2380)
+
+- FST: n = 2380 windows; mean diff = -2.13e-04 (SD 5.84e-03); mean |diff| = 3.11e-03; max |diff| = 1.42e-01; r = 0.994346; R^2 = 0.9887; identical in 5.2% of windows
+; +12.6 multiallelic SNPs per window in FST
 
 
 

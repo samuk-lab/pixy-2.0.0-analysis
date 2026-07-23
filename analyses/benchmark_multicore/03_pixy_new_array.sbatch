@@ -10,6 +10,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=8G
 # overridden per-arm by 03_submit_pixy_new_all.sh; re-tune from seff
+#SBATCH --partition=intel
 #SBATCH --time=0-00:30:00
 #SBATCH --array=1-100%25
 

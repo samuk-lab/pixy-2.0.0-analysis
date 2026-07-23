@@ -2,7 +2,10 @@
 data/vcfs/
 data/pixy_old_out/
 data/pixy_new_out/
+data/pixy_mem_out/
+data/pixy_mem_old_out/
 data/zarr/
+data/zarr_mem/
 logs/
 
 # Keep summary TSVs and the aggregated table

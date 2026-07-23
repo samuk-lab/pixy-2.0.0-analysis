@@ -38,8 +38,16 @@ miss_tw_td <- read_tsv(file.path(POLY_DIR, "thetaw_tajimaD_summary.tsv"),
   filter(stat %in% c("thetaw", "tajimaD")) |>
   select(stat, ploidy, miss_pct, estimator, mean, ci_lo, ci_hi, theoretical)
 
+# fst_hudson uses the biallelic estimator (new); all other stats use the
+# multiallelic estimator (new_multi). Hudson FST is a ratio of observed
+# dissimilarity, so the multiallelic version is theta-dependent and sits ~0.6%
+# below the flat infinite-sites line, reading as bias where there is none; the
+# biallelic FST tracks that line. Same underlying pixy run, different FST column.
+FST_ESTIMATOR <- "new"
+estimator_for_stat <- function(stat) if_else(stat == "fst_hudson", FST_ESTIMATOR, "new_multi")
+
 dat <- bind_rows(miss_pi_dxy_fst, miss_tw_td) |>
-  filter(estimator == "new_multi") |>
+  filter(estimator == estimator_for_stat(stat)) |>
   mutate(
     ploidy = factor(ploidy, levels = c(2, 4, 6, 8),
                     labels = c("2n", "4n", "6n", "8n"))
@@ -50,7 +58,7 @@ per_rep <- bind_rows(
   read_tsv(file.path(POLY_DIR, "per_rep_missingness.tsv"), show_col_types = FALSE),
   read_tsv(file.path(POLY_DIR, "per_rep_thetaw_tajimaD.tsv"), show_col_types = FALSE)
 ) |>
-  filter(estimator == "new_multi",
+  filter(estimator == estimator_for_stat(stat),
          stat %in% c("pi", "dxy", "fst_hudson", "thetaw", "tajimaD")) |>
   mutate(
     ploidy = factor(ploidy, levels = c(2, 4, 6, 8),
