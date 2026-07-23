@@ -99,13 +99,14 @@ Recovery = mean estimate / finite-sites JC69 expectation, per (ploidy x
 
 
 Multiallelic-aware estimator (the one plotted in Figure 3) for pi, dxy, theta_W
- and Tajima's D. **Hudson FST is the exception: it is biallelic-only.** These
- missingness arms ran before the 2026-07 FST fix, when pixy's FST path re-filtered
- to biallelic sites regardless of --include_multiallelic_snps, so the `new_multi`
- FST column here holds the biallelic estimand. That is the right target for
- Figure 3 regardless -- biallelic FST recovers the coalescent ratio 1 - T_W/T_B,
- which is the flat E[FST] tested here -- but 'multiallelic-aware' does not mean
- the same thing for FST as for the other four statistics.
+ and Tajima's D. **Hudson FST is the exception: it uses the biallelic estimator**
+ ('new'), selected explicitly. Figure 3 scores FST against the flat infinite-sites
+ coalescent E[FST] = 0.237 (1 - T_W/T_B), and the biallelic estimator is the one
+ whose estimand is that value -- filtering to biallelic sites removes visible
+ homoplasy, so it recovers the coalescent ratio. The multiallelic-aware FST instead
+ tracks the finite-sites E[FST](theta) (~0.2356 at this theta) and must NOT be
+ scored against 0.237. (Before the 2026-07 FST fix new_multi FST equalled biallelic;
+ that is no longer true, hence the explicit selection.)
  bias = mean(estimate)
  - E, pooled over the whole grid; MCSE = SD/sqrt(n_sim) is the Monte Carlo
  precision of that bias (Morris, White & Crowther 2019), NOT a threshold the
@@ -121,7 +122,7 @@ Multiallelic-aware estimator (the one plotted in Figure 3) for pi, dxy, theta_W
 
 | dxy | 72000 | -4.12e-07 | -0.001% | 4.5e-06 | 0.05% of E |
 
-| Hudson FST | 72000 | -1.37e-03 | -0.577% | 2.9e-05 | 0.65% of E |
+| Hudson FST | 72000 | -1.27e-04 | -0.054% | 3.0e-05 | 0.15% of E |
 
 | theta_W | 72000 | -3.07e-06 | -0.008% | 2.6e-06 | 0.07% of E |
 
@@ -130,7 +131,7 @@ Multiallelic-aware estimator (the one plotted in Figure 3) for pi, dxy, theta_W
 
 Interpretation (bias magnitude, per Morris et al. 2019):
 
-- pi, dxy, theta_W, and Hudson FST are unbiased to within 0.65% of the expected value in every ploidy x missingness cell (pooled relative bias: pi -0.013%, dxy -0.001%, Hudson FST -0.577%, theta_W -0.008%).
+- pi, dxy, theta_W, and Hudson FST are unbiased to within 0.15% of the expected value in every ploidy x missingness cell (pooled relative bias: pi -0.013%, dxy -0.001%, Hudson FST -0.054%, theta_W -0.008%).
 
 - Tajima's D: pooled bias -0.0002 (-0.018% under the +1 shift), worst-cell |bias| 0.0028 (absolute) against its simulated neutral reference; the per-window SD of D is ~1.6, so this is negligible.
 
@@ -148,22 +149,22 @@ Interpretation (bias magnitude, per Morris et al. 2019):
 
 |---|---|---|---|---|
 
-| statistic | 4 | 475.62 | <2e-16 | 0.53% |
+| statistic | 4 | 3.11 | 0.014 | 0.00% |
 
-| ploidy | 3 | 11.37 | 1.9e-07 | 0.01% |
+| ploidy | 3 | 15.40 | 5.1e-10 | 0.01% |
 
-| missingness | 4 | 0.97 | 0.42 | 0.00% |
+| missingness | 4 | 0.67 | 0.61 | 0.00% |
 
-| statistic x ploidy | 12 | 2.52 | 0.0026 | 0.01% |
+| statistic x ploidy | 12 | 2.20 | 0.0094 | 0.01% |
 
-| statistic x missingness | 16 | 0.63 | 0.86 | 0.00% |
+| statistic x missingness | 16 | 0.80 | 0.69 | 0.00% |
 
-| ploidy x missingness | 12 | 1.62 | 0.077 | 0.01% |
+| ploidy x missingness | 12 | 1.71 | 0.057 | 0.01% |
 
 | statistic x ploidy x missingness | 48 | 0.21 | 1 | 0.00% |
 
 
-Every term is a fraction of a percent in effect size. Missingness (main effect + all interactions involving it) explains 0.01% of the total variance in deviation-from-theory and is non-significant; the residual (replicate sampling noise) is 99.4%. Ploidy and statistic are significant but explain a negligible share of the variance: no cell mean departs from its expectation by more than 0.65%. (All five statistics share the same n, so significance here tracks effect size, not replicate count.)
+Every term is a fraction of a percent in effect size. Missingness (main effect + all interactions involving it) explains 0.01% of the total variance in deviation-from-theory and is non-significant; the residual (replicate sampling noise) is 100.0%. Ploidy and statistic are significant but explain a negligible share of the variance: no cell mean departs from its expectation by more than 0.15%. (All five statistics share the same n, so significance here tracks effect size, not replicate count.)
 
 
 Footnote on the `statistic` factor: it mixes four multiallelic-aware statistics (pi, dxy, theta_W, Tajima's D) with one biallelic one (Hudson FST -- see above). Each is compared against its own correct expectation, so the deviations are individually interpretable, but the significant `statistic` term is not an estimator comparison and must not be read as one.
@@ -223,6 +224,37 @@ Each estimator against its own expectation, over 10 ploidy x theta cells each.
  the across-replicate 95% interval contains E[FST] in 10 / 10 cells.
 
 
+Cross-estimand contrasts (the 'inverted' framing in Results/Discussion): the biallelic
+ estimator vs the FINITE-sites E, and the multiallelic-aware estimator vs the flat
+ infinite-sites E[FST] = 0.237. Finite-sites E[FST] declines from 0.2368 (theta = 0.005)
+ to 0.2331 (theta = 0.100), a -1.6% drop.
+
+
+| ploidy | theta | biallelic vs finite | multiallelic-aware vs infinite |
+
+|---|---|---|---|
+
+| diploid | 0.005 | +0.14% | -0.02% |
+
+| diploid | 0.010 | +0.05% | -0.27% |
+
+| diploid | 0.025 | +0.37% | -0.42% |
+
+| diploid | 0.050 | +0.67% | -0.91% |
+
+| diploid | 0.100 | +1.49% | -1.64% |
+
+| octoploid | 0.005 | -0.04% | -0.19% |
+
+| octoploid | 0.010 | +0.31% | +0.02% |
+
+| octoploid | 0.025 | +0.35% | -0.39% |
+
+| octoploid | 0.050 | +0.64% | -0.82% |
+
+| octoploid | 0.100 | +1.30% | -1.64% |
+
+
 The biallelic estimator's residual is the expected one: the filter removes
  *visible* homoplasy but back/parallel mutation keeps a site biallelic, so it
  sags at high theta -- and significantly so at theta = 0.100 (-0.16% to -0.35%
@@ -252,6 +284,21 @@ Power-law fit log(speedup) ~ log(cores) on cores >= 2 (exponent b; speedup = a*c
 
 
 
+Median speedup vs 1 core at each core count (Figure 2A):
+
+
+| statistic | 2 cores | 4 cores | 8 cores | 16 cores |
+
+|---|---|---|---|---|
+
+| dxy | 0.99x | 2.79x | 5.84x | 9.98x |
+
+| fst | 0.98x | 2.29x | 3.80x | 4.25x |
+
+| pi | 0.99x | 2.80x | 5.82x | 9.89x |
+
+
+
 Speedup vs the legacy single-core release (recorded as `0.95.01`), ratio of medians:
 
 
@@ -264,6 +311,38 @@ Speedup vs the legacy single-core release (recorded as `0.95.01`), ratio of medi
 | fst | 55.8 | 1.01x | 4.3x |
 
 | pi | 250.6 | 1.05x | 10.4x |
+
+
+
+
+## 6b. Peak memory (Figure 2B)
+
+
+Peak RSS pooled across pi/dxy/fst (10 Mb VCF, 10 diploid samples, 25 kb windows).
+ `worker` = largest single process (per-worker footprint); `tree` = summed across the
+ whole process tree (whole-job footprint plotted in Figure 2B). Median over seeds.
+
+
+| cores | tree (MB) | worker (MB) |
+
+|---|---|---|
+
+| 1 | 117 | 111 |
+
+| 2 | 343 | 105 |
+
+| 4 | 561 | 105 |
+
+| 8 | 996 | 105 |
+
+| 16 | 1861 | 105 |
+
+
+- legacy 0.95.01 single-core peak RSS: 1138 MB (single process).
+
+- per-worker footprint flat at ~105 MB across 2-16 cores, vs 1138 MB for the legacy single process: ~10.8x reduction in per-worker memory.
+
+- whole-tree footprint grows ~113 MB per added core (OLS slope over cores 1/2/4/8/16); it stays below the legacy single-core 1138 MB up to ~9 cores, above it beyond.
 
 
 

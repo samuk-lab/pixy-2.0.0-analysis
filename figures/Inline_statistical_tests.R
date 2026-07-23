@@ -225,8 +225,15 @@ per_rep <- tryCatch(
 if (is.null(theo) || is.null(per_rep)) {
     emit("\n_(missing per_rep_*.tsv or *_summary.tsv; run analysis/03 & 07 first)_\n")
 } else {
+    # FST is scored against the flat infinite-sites E[FST] = 0.237, so it must use the
+    # BIALLELIC estimator ('new') -- the estimator whose estimand IS that value. The other
+    # four statistics use the multiallelic-aware estimator ('new_multi'). Before the
+    # 2026-07 FST fix, new_multi FST equalled biallelic (the FST path ignored
+    # --include_multiallelic_snps); that is no longer true, so select FST explicitly.
     fig3 <- per_rep |>
-        filter(estimator == "new_multi", stat %in% fig3_stats) |>
+        filter(stat %in% fig3_stats,
+               (stat == "fst_hudson" & estimator == "new") |
+               (stat != "fst_hudson" & estimator == "new_multi")) |>
         left_join(theo, by = c("stat", "ploidy", "miss_pct", "estimator")) |>
         mutate(resid = value - theoretical) |>
         filter(is.finite(resid))
@@ -251,13 +258,14 @@ if (is.null(theo) || is.null(per_rep)) {
                              mcse = sqrt(se_sim^2 + ref_se^2))
 
     emit("\nMultiallelic-aware estimator (the one plotted in Figure 3) for pi, dxy, theta_W")
-    emit(" and Tajima's D. **Hudson FST is the exception: it is biallelic-only.** These")
-    emit(" missingness arms ran before the 2026-07 FST fix, when pixy's FST path re-filtered")
-    emit(" to biallelic sites regardless of --include_multiallelic_snps, so the `new_multi`")
-    emit(" FST column here holds the biallelic estimand. That is the right target for")
-    emit(" Figure 3 regardless -- biallelic FST recovers the coalescent ratio 1 - T_W/T_B,")
-    emit(" which is the flat E[FST] tested here -- but 'multiallelic-aware' does not mean")
-    emit(" the same thing for FST as for the other four statistics.")
+    emit(" and Tajima's D. **Hudson FST is the exception: it uses the biallelic estimator**")
+    emit(" ('new'), selected explicitly. Figure 3 scores FST against the flat infinite-sites")
+    emit(" coalescent E[FST] = 0.237 (1 - T_W/T_B), and the biallelic estimator is the one")
+    emit(" whose estimand is that value -- filtering to biallelic sites removes visible")
+    emit(" homoplasy, so it recovers the coalescent ratio. The multiallelic-aware FST instead")
+    emit(" tracks the finite-sites E[FST](theta) (~0.2356 at this theta) and must NOT be")
+    emit(" scored against 0.237. (Before the 2026-07 FST fix new_multi FST equalled biallelic;")
+    emit(" that is no longer true, hence the explicit selection.)")
     emit(" bias = mean(estimate)")
     emit(" - E, pooled over the whole grid; MCSE = SD/sqrt(n_sim) is the Monte Carlo")
     emit(" precision of that bias (Morris, White & Crowther 2019), NOT a threshold the")
@@ -456,6 +464,32 @@ if (!is.null(fst_sum)) {
         emit(" the across-replicate 95%% interval contains E[FST] in %d / %d cells.\n",
              sum(x$contains_E), nrow(x))
     }
+    # cross-estimand contrasts (the "inverted" framing quoted in Results/Discussion):
+    # biallelic estimator judged against the FINITE-sites E, and multiallelic-aware judged
+    # against the flat INFINITE-sites E = 0.237. finite E per cell = the new_multi
+    # `theoretical`; infinite E = E_fst.
+    fin <- fst |> filter(estimator == "new_multi") |>
+        select(ploidy, theta_nominal, E_finite = theoretical)
+    cross <- fst |>
+        select(ploidy, theta_nominal, estimator, mean) |>
+        pivot_wider(names_from = estimator, values_from = mean) |>
+        left_join(fin, by = c("ploidy", "theta_nominal")) |>
+        mutate(bi_vs_finite = 100 * (new - E_finite) / E_finite,
+               multi_vs_inf = 100 * (new_multi - E_fst) / E_fst) |>
+        arrange(ploidy, theta_nominal)
+    emit("\nCross-estimand contrasts (the 'inverted' framing in Results/Discussion): the")
+    emit(" biallelic estimator vs the FINITE-sites E, and the multiallelic-aware estimator vs")
+    emit(" the flat infinite-sites E[FST] = %.3f. Finite-sites E[FST] declines from %.4f",
+         E_fst, max(cross$E_finite))
+    emit(" (theta = %.3f) to %.4f (theta = %.3f), a %.1f%% drop.\n",
+         min(cross$theta_nominal), min(cross$E_finite), max(cross$theta_nominal),
+         100 * (min(cross$E_finite) / max(cross$E_finite) - 1))
+    emit("\n| ploidy | theta | biallelic vs finite | multiallelic-aware vs infinite |")
+    emit("\n|---|---|---|---|")
+    for (i in seq_len(nrow(cross)))
+        emit("\n| %s | %.3f | %+.2f%% | %+.2f%% |", cross$ploidy[i], cross$theta_nominal[i],
+             cross$bi_vs_finite[i], cross$multi_vs_inf[i])
+    emit("\n")
     # quote the theta = 0.1 contrast from the data, not hard-coded
     hi <- fst |> filter(theta_nominal == max(theta_nominal))
     hi_bi <- hi |> filter(estimator == "new")
@@ -508,6 +542,18 @@ if (!is.null(bench)) {
     }
     emit("\n")
 
+    # median speedup vs 1 core at each core count -- the 2/4/8/16-core intermediate
+    # points quoted in Results (e.g. "1.0x at two cores, 2.8x at four, 5.8x at eight").
+    emit("\nMedian speedup vs 1 core at each core count (Figure 2A):\n")
+    emit("\n| statistic | 2 cores | 4 cores | 8 cores | 16 cores |")
+    emit("\n|---|---|---|---|---|")
+    for (s in unique(sp$statistic)) {
+        d <- sp |> filter(statistic == s)
+        g <- function(c) { v <- d$speedup[d$n_cores == c]; ifelse(length(v), v, NA_real_) }
+        emit("\n| %s | %.2fx | %.2fx | %.2fx | %.2fx |", s, g(2), g(4), g(8), g(16))
+    }
+    emit("\n")
+
     # speedup vs the legacy release (the version benchmarked at a single core count).
     # these are the ratios plotted in Figure 2A and quoted in Results; ratio of
     # medians, matching Figure_2_Performance.R
@@ -529,6 +575,46 @@ if (!is.null(bench)) {
         }
         emit("\n")
     }
+}
+
+##########
+# 6b. peak memory (Figure 2B): per-worker vs whole process-tree RSS, new vs legacy
+##########
+emit("\n\n## 6b. Peak memory (Figure 2B)\n")
+MEM <- "../analyses/benchmark_multicore/data/results"
+mem_files <- list.files(MEM, pattern = "^pixy_mem_.*_10Mb.*\\.tsv$", full.names = TRUE)
+mem_files <- mem_files[!grepl("\\.lock$", mem_files)]
+if (length(mem_files)) {
+    mem <- map_dfr(mem_files, function(f) {
+        d <- suppressWarnings(read_tsv(f, show_col_types = FALSE, progress = FALSE))
+        d$is_old <- grepl("pixy_mem_old_", basename(f))
+        d
+    }) |> filter(Status == "OK")
+    memn <- mem |> filter(!is_old) |>
+        group_by(Cores) |>
+        summarise(tree_mb = median(Tree_peak_kb) / 1024,
+                  worker_mb = median(Proc_peak_kb) / 1024, .groups = "drop") |>
+        arrange(Cores)
+    memo <- median(mem$Proc_peak_kb[mem$is_old]) / 1024
+    worker_flat <- median(memn$worker_mb[memn$Cores >= 2])
+    fitm <- lm(tree_mb ~ Cores, data = memn)
+    cross <- approx(memn$tree_mb, memn$Cores, xout = memo)$y
+    emit("\nPeak RSS pooled across pi/dxy/fst (10 Mb VCF, 10 diploid samples, 25 kb windows).")
+    emit(" `worker` = largest single process (per-worker footprint); `tree` = summed across the")
+    emit(" whole process tree (whole-job footprint plotted in Figure 2B). Median over seeds.\n")
+    emit("\n| cores | tree (MB) | worker (MB) |")
+    emit("\n|---|---|---|")
+    for (i in seq_len(nrow(memn)))
+        emit("\n| %d | %.0f | %.0f |", memn$Cores[i], memn$tree_mb[i], memn$worker_mb[i])
+    emit("\n")
+    emit("\n- legacy 0.95.01 single-core peak RSS: %.0f MB (single process).", memo)
+    emit("\n- per-worker footprint flat at ~%.0f MB across 2-16 cores, vs %.0f MB for the",
+         worker_flat, memo)
+    emit(" legacy single process: ~%.1fx reduction in per-worker memory.", memo / worker_flat)
+    emit("\n- whole-tree footprint grows ~%.0f MB per added core (OLS slope over cores %s);",
+         coef(fitm)["Cores"], paste(memn$Cores, collapse = "/"))
+    emit(" it stays below the legacy single-core %.0f MB up to ~%.0f cores, above it beyond.\n",
+         memo, cross)
 }
 
 ##########

@@ -94,6 +94,7 @@ fig <- ggplot(wide, aes(old, new)) +
   labs(x = "pixy 0.95.01 estimate",
        y = "pixy 2.2.3 estimate") +
   theme_pixy() +
+	theme(axis.text = element_text(size = 10))+
   theme(aspect.ratio = 1,
         strip.text.x = element_text(face = "plain"))
 
